@@ -1,4 +1,3 @@
-import math
 class aes:  
     ##class for ecryption and decryption of data using aes##   
     def __init__(self, cipherkey, plaintext,N):
