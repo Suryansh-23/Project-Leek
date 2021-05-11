@@ -200,6 +200,7 @@ class aes:
         for i in range(0,len(statearray)):
             for j in range(0,len(statearray[i])):
                 statearray[i][j]='0x'+ISubsbox[((statearray[i][j])[-2])[-1]]
+         return statearray
     def decrypt(self):
         out=self.state_array(self.plaintext)
         Rkeys=self.key_conversion()
