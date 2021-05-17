@@ -33,6 +33,8 @@ class aes:
                         out[i].append('0x00')
             a.append(out)
         return a
+    def str_shift_R_2(self, str1):
+        return "0x"+str1[4:len(str1)]+str1[2:4]
     def key_conversion(self):
         ##key conversion into 11 round keys. Each round key consists of 32,48,64 bit words which are decided by the cipherkey##
         Rkey0=self.cipherkey
@@ -44,7 +46,7 @@ class aes:
             Rkeyt[0].append(Rkey0Wi)
         Rconi={1:2,2:4,3:8,4:16,5:32,6:64,7:128,8:27,9:54,10:108,11:216,12:171,13:77,14:154}
         for i in range(1,(11+(self.N*2))):
-            RkeyiW0=(Rkeyt[i-1])[0]^(((Rkeyt[i-1])[2])>>8)^Rconi[i]
+            RkeyiW0=(Rkeyt[i-1])[0]^(int(self.str_shift_R_2(hex((Rkeyt[i-1])[2])),16))^Rconi[i]
             Rkeyt[i].append(RkeyiW0)
             for j in range(0,3):
                 RkeyiWj=(Rkeyt[i-1])[j]^(Rkeyt[i])[j-1]
@@ -74,6 +76,8 @@ class aes:
         substext=[[],[],[],[]]
         for i in range(0, len(statearray)):
             for j in statearray[i]:
+                if j=="0x0":
+                    j="0x00"
                 substext[i].append("0x"+(S_box[j[-2]])[j[-1]])
         return substext
     def Round_Shift_R(self,L,n):
@@ -103,9 +107,9 @@ class aes:
             for k in range(0,len(temp)):
                 out[k].insert(i,temp[k])
         for i in range(0, len(out)):
-            out[i][0]=statearray[i][0]
+            out[i].insert(0,statearray[i][0])
         return out
-    def multi(n1,n2):
+    def multi(self,n1,n2):
         ##Defining the matrix multiplication##
         E_box={'0':{'0':'01','1':'03','2':'05','3':'0f','4':'11','5':'33','6':'55','7':'ff','8':'1a','9':'2e','a':'72','b':'96','c':'A1','d':'f8','e':'13','f':'35'},
         '1':{'0':'5f','1':'e1','2':'38','3':'48','4':'d8','5':'73','6':'95','7':'a4','8':'f7','9':'02','a':'06','b':'0A','c':'1e','d':'22','e':'66','f':'aa'},
@@ -140,11 +144,15 @@ class aes:
         'd':{'0':'53','1':'39','2':'84','3':'3c','4':'41','5':'a2','6':'6d','7':'47','8':'14','9':'2a','a':'9e','b':'5d','c':'56','d':'f2','e':'d3','f':'ab'},
         'e':{'0':'44','1':'11','2':'92','3':'d9','4':'23','5':'20','6':'2e','7':'89','8':'b4','9':'7c','a':'b8','b':'26','c':'77','d':'99','e':'e3','f':'a5'},
         'f':{'0':'67','1':'4a','2':'ed','3':'de','4':'c5','5':'31','6':'fe','7':'18','8':'0d','9':'63','a':'8C','b':'80','c':'c0','d':'f7','e':'70','f':'07'}}
-
-        out1 = int('0x'+(L_box[n1[-2]])[n1[-1]],16)+int('0x'+(L_box[n2[-2]])[n2[-1]], 16)
-        if out1>255:
-           out1-=255
-        out1=hex(out1)
+        if n1 or n2=="0x00":
+            out1="0x00"
+        else:
+            out1 = int('0x'+(L_box[n1[-2]])[n1[-1]],16)+int('0x'+(L_box[n2[-2]])[n2[-1]], 16)
+            if out1>255:
+                out1-=255
+            out1=hex(out1)
+        if out1=="0x0":
+            out1="0x00"
         return (int(('0x'+(E_box[out1[-2]])[out1[-1]]),16))
 
     def MixColumns(self,statearray,I=False):
@@ -155,13 +163,17 @@ class aes:
                 Multi_Matrix=[['0x0e','0x0b','0x0d','0x09'],['0x09','0x0e','0x0b','0x0d'],['0x0d','0x09','0x0e','0x0b'],['0x0b','0x0d','0x09','0x0e']]
             for i in range(0, len(statearray)):
                 statearray[i][0]=hex(self.multi(statearray[i][0],Multi_Matrix[i][0])^self.multi(statearray[i][1],Multi_Matrix[i][1])^self.multi(statearray[i][2],Multi_Matrix[i][2])^self.multi(statearray[i][3], Multi_Matrix[i][3]))
+                if len(statearray[i][0])<4:
+                    statearray[i][0]="0x0"+statearray[i][0][-1]
             return statearray 
     
     def AddroundKeys(self, Rkeys, round, statearray):
         out=[[],[],[],[]]
         for i in range(0,len(statearray)):
-            for j in range(0,3):
-                out[i].append(hex(int(Rkeys[round][j],16)^int(statearray[i][j],16)))
+            for j in range(2,10,2):
+                out[i].append(hex(int("0x"+Rkeys[round][j//4][j:j+2],16)^int(statearray[i][(j-2)//2],16)))
+                if len(out[i][-1])<4:
+                    out[i][-1]="0x0"+out[i][-1][-1]
         return out
     def encrypt(self):
         out=self.state_array()
@@ -171,7 +183,7 @@ class aes:
             temp=self.AddroundKeys(Rkeys,0,temp)
             for j in range(1,10):
                 temp=self.MixColumns(self.AddroundKeys(Rkeys,j,self.ShiftRows(self.SubBytes(temp))))
-            temp=self.AddroundKeys(Rkeys,11,self.ShiftRows(self.SubBytes(temp)))
+            temp=self.AddroundKeys(Rkeys,10,self.ShiftRows(self.SubBytes(temp)))
             out[i]=temp
         outstr='0x'
         for i in out:
@@ -179,7 +191,7 @@ class aes:
                 for k in j:
                     outstr+=(k[-2]+k[-1])
         return outstr
-    def ISubBytes(statearray):
+    def ISubBytes(self, statearray):
         ##Inverse of the SubsBytes function##
         ISubsbox={'0':{'0':'52','1':'09','2':'6a','3':'d5','4':'30','5':'36','6':'a5','7':'38','8':'bf','9':'40','a':'a3','b':'9e','c':'81','d':'f3','e':'d7','f':'fb'},
         '1':{'0':'7c','1':'e3','2':'39','3':'82','4':'9b','5':'2f','6':'ff','7':'87','8':'34','9':'8e','a':'43','b':'44','c':'c4','d':'de','e':'e9','f':'cb'},
@@ -199,16 +211,16 @@ class aes:
         'f':{'0':'17','1':'2b','2':'04','3':'7e','4':'ba','5':'77','6':'d6','7':'26','8':'e1','9':'69','a':'14','b':'63','c':'55','d':'21','e':'0c','f':'7d'}}
         for i in range(0,len(statearray)):
             for j in range(0,len(statearray[i])):
-                statearray[i][j]='0x'+ISubsbox[((statearray[i][j])[-2])[-1]]
-         return statearray
+                statearray[i][j]='0x'+ISubsbox[(statearray[i][j])[-2]][(statearray[i][j])[-1]]
+        return statearray
     def decrypt(self):
-        out=self.state_array(self.plaintext)
+        out=self.state_array()
         Rkeys=self.key_conversion()
         for i in range(0,len(out)):
-            temp=self.AddroundKeys(Rkeys,out[i])
-            for j in range(0,9):
-                temp=self.MixColumns(self.AddroundKeys(Rkeys,self.ISubBytes(self.ShiftRows(temp, Inverse=True))),I=True)
-            temp=self.AddroundKeys(Rkeys,(self.SubBytes(self.ShiftRows(temp),Inverse=True)))
+            temp=self.AddroundKeys(Rkeys,0,out[i])
+            for j in range(1,10):
+                temp=self.MixColumns(self.AddroundKeys(Rkeys,j,self.ISubBytes(self.ShiftRows(temp, Inverse=True))),I=True)
+            temp=self.AddroundKeys(Rkeys,10,(self.SubBytes(self.ShiftRows(temp,Inverse=True))))
             out[i]=temp
         outstr='0x'
         for i in out:
@@ -216,3 +228,6 @@ class aes:
                 for k in j:
                     outstr+=(k[-2]+k[-1])
         return outstr
+a=aes('0x0123456789abcdef0123456789abcdef', '0x0123456789abcdef0123456789abcdef1234567890abcdef', 0)
+b=aes('0x0123456789abcdef0123456789abcdef',a.encrypt(),0)
+print(b.decrypt())
