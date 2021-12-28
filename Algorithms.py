@@ -1,5 +1,5 @@
-class aes:  
-    ##class for ecryption and decryption of data using aes##   
+class aes_encrypt:  
+    ##class for ecryption of data using aes##   
     def __init__(self, cipherkey, plaintext,N):
         self.N=N
         self.cipherkey=cipherkey
@@ -154,7 +154,6 @@ class aes:
         if out1=="0x0":
             out1="0x00"
         return (int(('0x'+(E_box[out1[-2]])[out1[-1]]),16))
-
     def MixColumns(self,statearray,I=False):
         ##Function to mix the columns##
             if I==False:
@@ -166,7 +165,6 @@ class aes:
                 if len(statearray[i][0])<4:
                     statearray[i][0]="0x0"+statearray[i][0][-1]
             return statearray 
-    
     def AddroundKeys(self, Rkeys, round, statearray):
         out=[[],[],[],[]]
         for i in range(0,len(statearray)):
@@ -182,7 +180,7 @@ class aes:
             temp=out[i]
             temp=self.AddroundKeys(Rkeys,0,temp)
             for j in range(1,10):
-                temp=self.MixColumns(self.AddroundKeys(Rkeys,j,self.ShiftRows(self.SubBytes(temp))))
+                temp=(self.AddroundKeys(Rkeys,j,self.ShiftRows(self.SubBytes(temp))))
             temp=self.AddroundKeys(Rkeys,10,self.ShiftRows(self.SubBytes(temp)))
             out[i]=temp
         outstr='0x'
@@ -191,6 +189,8 @@ class aes:
                 for k in j:
                     outstr+=(k[-2]+k[-1])
         return outstr
+class aes_decrypt(aes_encrypt):
+    ##Class for decryption of data using aes
     def ISubBytes(self, statearray):
         ##Inverse of the SubsBytes function##
         ISubsbox={'0':{'0':'52','1':'09','2':'6a','3':'d5','4':'30','5':'36','6':'a5','7':'38','8':'bf','9':'40','a':'a3','b':'9e','c':'81','d':'f3','e':'d7','f':'fb'},
@@ -219,8 +219,8 @@ class aes:
         for i in range(0,len(out)):
             temp=self.AddroundKeys(Rkeys,0,out[i])
             for j in range(1,10):
-                temp=self.MixColumns(self.AddroundKeys(Rkeys,j,self.ISubBytes(self.ShiftRows(temp, Inverse=True))),I=True)
-            temp=self.AddroundKeys(Rkeys,10,(self.SubBytes(self.ShiftRows(temp,Inverse=True))))
+                temp=(self.AddroundKeys(Rkeys,j,self.ShiftRows(self.ISubBytes(temp), Inverse=True)))
+            temp=self.AddroundKeys(Rkeys,10,self.ShiftRows(self.ISubBytes(temp),Inverse=True))
             out[i]=temp
         outstr='0x'
         for i in out:
@@ -228,6 +228,3 @@ class aes:
                 for k in j:
                     outstr+=(k[-2]+k[-1])
         return outstr
-a=aes('0x0123456789abcdef0123456789abcdef', '0x0123456789abcdef0123456789abcdef1234567890abcdef', 0)
-b=aes('0x0123456789abcdef0123456789abcdef',a.encrypt(),0)
-print(b.decrypt())
