@@ -1,62 +1,271 @@
-/*
- * @NOTE: Prepend a `~` to css file paths that are in your node_modules
- *        See https://github.com/webpack-contrib/sass-loader#imports
- */
+* {
+    box-sizing: border-box;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+}
+
+:root {
+    --project-color: #7faef4;
+    --toolbar-theme: {
+        border-radius: 4px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 0.75rem;
+    cursor: default;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-d);
+    border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 0.5rem;
+    border-radius: 3rem;
+    border: 2.5px solid var(--surface-d);
+    cursor: grab;
+    background-clip: content-box;
+    background: var(--project-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        var(--project-color) 0%,
+        rgba(44, 104, 196, 1) 100%
+    );
+}
 body {
-  position: relative;
-  color: white;
-  height: 100vh;
-  background: linear-gradient(
-    200.96deg,
-    #fedc2a -29.09%,
-    #dd5789 51.77%,
-    #7a2c9e 129.35%
-  );
-  font-family: sans-serif;
-  overflow-y: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-button {
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  appearance: none;
-  font-size: 1.3rem;
-  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
-    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
-  transition: all ease-in 0.1s;
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
-li {
-  list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--surface-b);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 a {
-  text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
+    text-decoration: none;
 }
 
-a:hover {
-  opacity: 1;
-  text-decoration: none;
+textarea {
+    resize: none;
+    width: -webkit-fill-available;
+    cursor: auto;
 }
 
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
+.p-inputtext:enabled:focus {
+    box-shadow: 0 0 0 2px #93cbf9;
+}
+
+#root {
+    height: 100vh;
+}
+
+.bg-project {
+    background-color: var(--project-color);
+    color: var(--primary-color-text);
+}
+
+.icon-wiki::before {
+    content: 'W';
+}
+
+.project-text {
+    font-size: inherit;
+    color: var(--project-color);
+}
+
+.blur {
+    backdrop-filter: blur(8px) saturate(175%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(175%) !important;
+    background-color: rgba(17, 25, 40, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.125) !important;
+    color: white;
+}
+
+.sidebar-radius {
+    border-radius: 0 12px 12px 0;
+}
+
+.max-h-whole {
+    height: 100vh;
+}
+
+.p-sidebar-header {
+    display: none;
+}
+
+.p-sidebar-content {
+    padding: 0 !important;
+}
+
+.p-menu.p-component {
+    background: none !important;
+    border: none !important;
+}
+
+.p-submenu-header {
+    background: none !important;
+}
+
+.button-gradient {
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    border-color: var(--project-color) !important;
+    background: linear-gradient(
+        135deg,
+        var(--project-color) 0%,
+        rgba(44, 104, 196, 1) 100%
+    );
+}
+.button-gradient:hover {
+    background: var(--project-color) !important;
+}
+
+.p-card-body {
+    padding: 0 !important;
+}
+
+.p-card-content {
+    padding: 1rem !important;
+}
+
+.p-button.p-component.p-button-raised:hover {
+    background: var(--project-color) !important;
+}
+
+/* .p-button.p-component.info-button.p-button-raised.p-button-outlined.p-button-info.p-button-icon-only:hover {
+  background-color: #7faef4 !important;
+} */
+
+/* .p-button.p-component.p-button-raised.p-button-icon-only:not(.p-button-warning):hover {
+  background-color: #7faef4 !important;
+} */
+
+.p-button.p-component.p-button-raised.p-button-warning {
+    background: rgb(242, 201, 76);
+    background: linear-gradient(
+        135deg,
+        rgba(242, 201, 76, 1) 0%,
+        rgba(242, 153, 74, 1) 100%
+    );
+}
+p-button.p-component.p-button-raised.p-button-warning:hover {
+    background-color: rgba(242, 201, 76, 1) !important;
+}
+
+.border-change {
+    border-radius: 12px !important;
+}
+
+.p-menuitem-link {
+    border-radius: 12px !important;
+}
+
+.sidebar-home > a {
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sidebar-home > a > span {
+    font-size: 1.5rem;
+}
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label,
+.p-float-label .p-inputwrapper-focus ~ label,
+.p-float-label .p-inputwrapper-filled ~ label {
+    top: -1.25rem;
+    font-size: 1.25rem;
+}
+
+.locker-logo {
+    aspect-ratio: 1 / 1;
+    width: 10rem;
+}
+.p-progressbar-value.p-progressbar-value-animate {
+    background: var(--project-color);
+}
+
+span.p-button.p-fileupload-choose.p-component:not(:hover) {
+    color: rgba(255, 255, 255, 0.8);
+    border-color: var(--project-color) !important;
+    background: linear-gradient(
+        135deg,
+        var(--project-color) 0%,
+        rgba(44, 104, 196, 1) 100%
+    );
+    border: none !important;
+    border-radius: 12px !important;
+}
+
+span.p-button.p-fileupload-choose.p-component:hover {
+    background-color: var(--project-color);
+    border-color: var(--project-color) !important;
+    border-radius: 12px !important;
+}
+.p-button.p-component.p-disabled {
+    background-color: var(--project-color);
+    border-radius: 12px !important;
+}
+.p-button.p-component:not(.p-button-danger) {
+    color: rgba(255, 255, 255, 0.8);
+    border-color: var(--project-color) !important;
+    background: linear-gradient(
+        135deg,
+        var(--project-color) 0%,
+        rgba(44, 104, 196, 1) 100%
+    );
+    border: none !important;
+    border-radius: 12px !important;
+}
+
+.p-button.p-component:not(.p-button-danger):hover {
+    background-color: var(--project-color);
+    border-color: var(--project-color) !important;
+    border-radius: 12px !important;
+}
+
+.p-fileupload-content {
+    backdrop-filter: blur(8px) saturate(175%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(175%) !important;
+    background-color: rgba(17, 25, 40, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.125) !important;
+    color: white;
+    border-radius: 0 0 12px 12px !important;
+}
+
+.p-fileupload-buttonbar {
+    backdrop-filter: blur(8px) saturate(175%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(175%) !important;
+    background-color: rgba(17, 25, 40, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.125) !important;
+    color: white;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.file-remove {
+    background: linear-gradient(150deg, #f44336, #6b111a) !important;
+    border-color: #f44336 !important;
+    color: #fff !important;
+}
+
+.file-remove:hover {
+    background: #f44336 !important;
+    border-color: #f44336 !important;
+    color: #212529 !important;
+}
+
+.file-icon::before {
+    font-size: 1.75rem !important;
+}
+
+.p-tag.p-component.p-tag-warning {
+    background: linear-gradient(150deg, #f2c94c, #f2994a) !important;
 }
