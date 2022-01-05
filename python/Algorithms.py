@@ -1,9 +1,10 @@
-class aes_encrypt:
-    ##class for ecryption of data using aes##
-    def __init__(self, cipherkey, plaintext, N):
-        self.N = N
-        self.cipherkey = cipherkey
-        self.plaintext = plaintext
+from PIL import Image
+class aes_encrypt:  
+    ##class for ecryption of data using aes##   
+    def __init__(self, cipherkey, plaintext,N):
+        self.N=N
+        self.cipherkey=cipherkey
+        self.plaintext=plaintext
         ##plaintext MUST be entered in a STRING of HEXADECIMAL numbers with thw 0x prefix##
         ##Cipherkey MUST be a 128, 192, 256 bit key entered as a string of hexadecimal numbers with the 0x prefix##
         ##N is the encryption type. 128 bit is 0, 192 is 1 and 256 is 2##
@@ -383,8 +384,7 @@ class aes_encrypt:
         out = []
         for i in range(n, 0, -1):
             out.append(L[-i])
-        else:
-            out.extend(L[0:-n])
+        out.extend(L[0:-n])
         return out
 
     def Round_Shift_L(self, L, n):
@@ -403,11 +403,12 @@ class aes_encrypt:
             if Inverse == False:
                 temp = self.Round_Shift_R(temp, i)
             else:
-                temp = self.Round_Shift_L(temp, i)
-            for k in range(0, len(temp)):
-                out[k].insert(i, temp[k])
-        for i in range(0, len(out)):
-            out[i].insert(0, statearray[i][0])
+                temp=self.Round_Shift_L(temp,i)
+            for k in range(0,len(temp)):
+                out[k].insert(i,temp[k])
+        if not Inverse:
+            for i in range(0, len(out)):
+                out[i].insert(0,statearray[i][0])
         return out
 
     def multi(self, n1, n2):
@@ -1033,30 +1034,25 @@ class aes_encrypt:
         return statearray
 
     def AddroundKeys(self, Rkeys, round, statearray):
-        out = [[], [], [], []]
-        for i in range(0, len(statearray)):
-            for j in range(2, 10, 2):
-                out[i].append(
-                    hex(
-                        int("0x" + Rkeys[round][j // 4][j : j + 2], 16)
-                        ^ int(statearray[i][(j - 2) // 2], 16)
-                    )
-                )
-                if len(out[i][-1]) < 4:
-                    out[i][-1] = "0x0" + out[i][-1][-1]
+        out=[[],[],[],[]]
+        for i in range(0,len(statearray)):
+            for j in range(2,10,2):
+                out[i].append(hex(int("0x"+Rkeys[round][j//4][j:j+2],16)^int(statearray[i][(j-2)//2],16)))
+                if len(out[i][-1])<4:
+                    out[i][-1]="0x0"+out[i][-1][-1] 
         return out
 
     def encrypt(self):
-        out = self.state_array()
-        Rkeys = self.key_conversion()
-        for i in range(0, len(out)):
-            temp = out[i]
-            temp = self.AddroundKeys(Rkeys, 0, temp)
-            for j in range(1, 10):
-                temp = self.AddroundKeys(Rkeys, j, self.ShiftRows(self.SubBytes(temp)))
-            temp = self.AddroundKeys(Rkeys, 10, self.ShiftRows(self.SubBytes(temp)))
-            out[i] = temp
-        outstr = "0x"
+        out=self.state_array()
+        Rkeys=self.key_conversion()
+        for i in range(0,len(out)):
+            temp=out[i]
+            temp=self.AddroundKeys(Rkeys,0,temp)
+            for j in range(1,10):
+                temp=self.SubBytes(self.ShiftRows(self.AddroundKeys(Rkeys,j,temp)))
+            temp=self.SubBytes(self.ShiftRows(self.AddroundKeys(Rkeys,10,(temp))))
+            out[i]=temp
+        outstr='0x'
         for i in out:
             for j in i:
                 for k in j:
@@ -1366,21 +1362,54 @@ class aes_decrypt(aes_encrypt):
         return statearray
 
     def decrypt(self):
-        out = self.state_array()
-        Rkeys = self.key_conversion()
-        for i in range(0, len(out)):
-            temp = self.AddroundKeys(Rkeys, 0, out[i])
-            for j in range(1, 10):
-                temp = self.AddroundKeys(
-                    Rkeys, j, self.ShiftRows(self.ISubBytes(temp), Inverse=True)
-                )
-            temp = self.AddroundKeys(
-                Rkeys, 10, self.ShiftRows(self.ISubBytes(temp), Inverse=True)
-            )
-            out[i] = temp
-        outstr = "0x"
+        out=self.state_array()
+        Rkeys=self.key_conversion()
+        for i in range(0,len(out)):
+            temp=self.AddroundKeys(Rkeys,10,self.ShiftRows(self.ISubBytes(out[i]),Inverse=True))
+            for j in range(9,0,-1):
+                temp=self.AddroundKeys(Rkeys,j,self.ShiftRows(self.ISubBytes(temp),Inverse=True))
+            temp=self.AddroundKeys(Rkeys,0,temp)
+            out[i]=temp
+        outstr='0x'
         for i in out:
             for j in i:
                 for k in j:
-                    outstr += k[-2] + k[-1]
+                    outstr+=(k[-2]+k[-1])
         return outstr
+class stegano_encrypt():
+    def __init__(self,img,plaintext,step=1):
+        ##plaintext must be entered as a regular string of characters
+        self.plaintext=plaintext
+        self.add=img
+        self.step=step
+    def encrypt(self):
+        img=Image.open(self.add)
+        hist=img.histogram()
+        s=''
+        for i in self.plaintext:
+            s+=((bin(ord(i))).lstrip('0b'))
+        for j in range(0,len(s),self.step):
+            bin_h=bin(hist[j])
+            bin_h=bin_h[:-1]+s[j]
+            hist[j]=int(bin_h,2)
+        img.putdata(hist)
+        return img
+class stegano_decrypt:
+        def __init__(self,img_obj=None,step=1):
+        ##plaintext must be entered as a regular string of characters
+            self.step=step
+            self.img=img_obj
+        def decrypt(self):
+            hist=self.img.histogram()
+            s=''
+            outstr=''
+            for i in range(0,len(hist),self.step):
+                bin_h=bin(hist[i])
+                s+=bin_h[-1]
+            try:
+                for i in range(7,len(s),7):
+                    outstr+=chr(int(s[i-7:i],2))
+            except ValueError:
+                pass
+            outstr+=chr(int(s[i:],2))
+            return outstr
