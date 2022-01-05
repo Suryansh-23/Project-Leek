@@ -9,11 +9,9 @@ import { Card } from 'primereact/card';
 import {
     FileUpload,
     FileUploadHeaderTemplateOptions,
-    FileUploadItemTemplateType,
     FileUploadUploadParams,
     ItemTemplateOptions,
 } from 'primereact/fileupload';
-import { ProgressBar } from 'primereact/progressbar';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
 import { getClassWithColor } from 'file-icons-js';
@@ -36,7 +34,7 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
 
     const onTemplateUpload = (e: FileUploadUploadParams) => {
         let tempSize = 0;
-        e.file.forEach((f) => {
+        Array.from(e.file).forEach((f) => {
             tempSize += f.size || 0;
             // eslint-disable-next-line no-console
             console.log(f);
@@ -70,16 +68,10 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                 {chooseButton}
                 {uploadButton}
                 {cancelButton}
-                <ProgressBar
-                    value={Number(totalSize)}
-                    displayValueTemplate={() => `${totalSize} / 128 MB`}
-                    className="border-change"
-                    style={{
-                        width: '300px',
-                        height: '30px',
-                        marginLeft: 'auto',
-                    }}
-                />
+                <span className="project-text text-3xl text-bold">
+                    {Number(totalSize)}
+                </span>{' '}
+                MB filled
             </div>
         );
     };
