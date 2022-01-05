@@ -58,10 +58,8 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                                 value={encryptStr}
                                 onChange={(e) => setEncryptStr(e.target.value)}
                                 rows={10}
+                                placeholder="Enter String for Encryption"
                             />
-                            <label htmlFor="in">
-                                Enter String for Encryption
-                            </label>
                         </span>
                         <i className="pi pi-arrows-h text-2xl m-2" />
                         <span className="p-float-label flex-grow-1">
@@ -70,11 +68,8 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                                 value={decryptStr}
                                 onChange={(e) => setDecryptStr(e.target.value)}
                                 rows={10}
+                                placeholder="Enter String for Decryption"
                             />
-
-                            <label htmlFor="in">
-                                Enter String for Decryption
-                            </label>
                         </span>
                     </div>
                     <div className="flex justify-content-center pb-3">

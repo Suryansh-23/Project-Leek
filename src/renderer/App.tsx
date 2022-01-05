@@ -13,6 +13,7 @@ import AES from './AES';
 import SideButton from './SideButton';
 import SideBar from './Sidebar';
 import FileVault from './FileVault';
+import Stegano from './Stegano';
 
 export default function App() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -63,7 +64,9 @@ export default function App() {
                                 hash={hash}
                             />
                         </Route>
-                        <Route path="/stegano" />
+                        <Route path="/stegano" exact>
+                            <Stegano pageVariants={pageVariants} hash={hash} />
+                        </Route>
                     </Switch>
                 </HashRouter>
             </AnimatePresence>
