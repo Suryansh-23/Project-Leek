@@ -232,7 +232,7 @@
         "electron-log": "^4.4.1",
         "electron-updater": "^4.6.4",
         "file-icons-js": "github:websemantics/file-icons-js",
-        "history": "4.x.x",
+        "history": "5.x.x",
         "primeflex": "^3.1.2",
         "primeicons": "^5.0.0",
         "primereact": "^7.1.0",
