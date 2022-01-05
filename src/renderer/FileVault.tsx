@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -8,11 +9,14 @@ import { Card } from 'primereact/card';
 import {
     FileUpload,
     FileUploadHeaderTemplateOptions,
+    FileUploadItemTemplateType,
     FileUploadUploadParams,
+    ItemTemplateOptions,
 } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
-// import { Button } from 'primereact/button';
-// import { Tag } from 'primereact/tag';
+import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
+import { getClassWithColor } from 'file-icons-js';
 import locker from '../../assets/locker.svg';
 
 interface FileVaultProps {
@@ -22,14 +26,12 @@ interface FileVaultProps {
 
 const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
     const [totalSize, setTotalSize] = useState<Number>(0);
-    const fileUploadRef = useRef(null);
+    const fileUploadRef = useRef<null | FileUpload>(null);
 
     useEffect(() => {
         const el = document.querySelector('input[type="file"]');
-        if (el != null) {
-            el.setAttribute('webkitdirectory', '');
-            el.setAttribute('directory', '');
-        }
+        el?.setAttribute('webkitdirectory', '');
+        el?.setAttribute('directory', '');
     }, []);
 
     const onTemplateUpload = (e: FileUploadUploadParams) => {
@@ -71,10 +73,49 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                 <ProgressBar
                     value={Number(totalSize)}
                     displayValueTemplate={() => `${totalSize} / 128 MB`}
+                    className="border-change"
                     style={{
                         width: '300px',
                         height: '30px',
                         marginLeft: 'auto',
+                    }}
+                />
+            </div>
+        );
+    };
+
+    const itemTemplate = (
+        file: { name: string; objectURL: string },
+        props: ItemTemplateOptions
+    ) => {
+        const iconClass = getClassWithColor(file.name);
+
+        return (
+            <div className="flex align-items-center flex-wrap">
+                <div
+                    className="flex align-items-center"
+                    style={{ width: '40%' }}
+                >
+                    <i
+                        role="presentation"
+                        className={`file-icon ${iconClass}`}
+                    />
+                    <span className="flex flex-column text-left ml-3">
+                        {file.name}
+                        <small>{new Date().toLocaleDateString()}</small>
+                    </span>
+                </div>
+                <Tag
+                    value={props.formatSize}
+                    severity="warning"
+                    className="border-change px-3 py-2"
+                />
+                <Button
+                    type="button"
+                    icon="pi pi-times"
+                    className="p-button-outlined p-button-rounded p-button-danger file-remove border-change ml-auto"
+                    onClick={() => {
+                        props.onRemove(props);
                     }}
                 />
             </div>
@@ -110,6 +151,7 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                     maxFileSize={128000000 - Number(totalSize)}
                     onUpload={onTemplateUpload}
                     headerTemplate={headerTemplate}
+                    itemTemplate={itemTemplate}
                     onClear={() => {
                         console.log('Cleared');
                         setTotalSize(0);
@@ -117,7 +159,7 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                         console.log(totalSize);
                     }}
                     onRemove={(e) => {
-                        let tmpFiles = Array.from(fileUploadRef.current.files);
+                        let tmpFiles = Array.from(fileUploadRef.current?.files);
                         let i = 0;
                         for (const item of tmpFiles) {
                             if (item === e.file) {
@@ -133,8 +175,8 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                         fileUploadRef.current.files = tmpFiles;
                     }}
                     emptyTemplate={
-                        <p className="p-m-0">
-                            Drag and drop files to here to upload.
+                        <p className="m-0 text-center text-2xl">
+                            Drag and drop files to here to upload
                         </p>
                     }
                 />
