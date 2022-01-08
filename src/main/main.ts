@@ -14,6 +14,8 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { ChildProcess, execFile } from 'child_process';
+import { stdout } from 'process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -24,6 +26,7 @@ export default class AppUpdater {
         autoUpdater.checkForUpdatesAndNotify();
     }
 }
+let backend: ChildProcess;
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -43,6 +46,27 @@ const isDevelopment =
 
 if (isDevelopment) {
     require('electron-debug')();
+    backend = execFile(
+        'python',
+        ['./python/main.py'],
+        (error, sout, stderr) => {
+            stdout.write(`Python : ${sout}`);
+            if (error) {
+                console.error(stderr);
+                throw error;
+            }
+            console.log(stdout);
+        }
+    );
+} else {
+    backend = execFile('./python/main.py', (error, sout, stderr) => {
+        stdout.write(`Python : ${sout}`);
+        if (error) {
+            console.error(stderr);
+            throw error;
+        }
+        console.log(stdout);
+    });
 }
 
 const installExtensions = async () => {
@@ -78,6 +102,7 @@ const createWindow = async () => {
         icon: getAssetPath('icon.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
+            webSecurity: false,
         },
     });
 
@@ -95,6 +120,7 @@ const createWindow = async () => {
     });
 
     mainWindow.on('closed', () => {
+        backend.kill('SIGTERM');
         mainWindow = null;
     });
 

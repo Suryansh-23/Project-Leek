@@ -214,7 +214,7 @@ span.p-button.p-fileupload-choose.p-component:hover {
     background-color: var(--project-color);
     border-radius: 12px !important;
 }
-.p-button.p-component:not(.p-button-danger) {
+/* .p-button.p-component:not(.p-button-danger) {
     color: rgba(255, 255, 255, 0.8);
     border-color: var(--project-color) !important;
     background: linear-gradient(
@@ -230,7 +230,7 @@ span.p-button.p-fileupload-choose.p-component:hover {
     background-color: var(--project-color);
     border-color: var(--project-color) !important;
     border-radius: 12px !important;
-}
+} */
 
 .p-fileupload-content {
     backdrop-filter: blur(8px) saturate(175%) !important;
@@ -268,4 +268,42 @@ span.p-button.p-fileupload-choose.p-component:hover {
 
 .p-tag.p-component.p-tag-warning {
     background: linear-gradient(150deg, #f2c94c, #f2994a) !important;
+}
+
+.webkit-width {
+    width: -webkit-fill-available !important;
+}
+
+.icon-btn:hover {
+    color: #fff !important;
+}
+
+/* Dialog Stuff*/
+.p-dialog.p-component.p-dialog-enter-done {
+    border: none;
+}
+
+.p-dialog-header {
+    justify-content: center;
+    padding-bottom: 1.5rem !important;
+}
+/* .p-dialog-header span {
+    font-size: 2.5rem !important;
+} */
+
+.p-dialog-content,
+.p-dialog-header {
+    background: none !important;
+}
+
+.p-dialog-content {
+    text-align: justify;
+}
+
+.p-dialog.p-component.p-dialog-enter-done {
+    backdrop-filter: blur(8px) saturate(175%) !important;
+    -webkit-backdrop-filter: blur(8px) saturate(175%) !important;
+    background-color: rgba(17, 25, 40, 0.55) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.125) !important;
 }
