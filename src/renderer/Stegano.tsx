@@ -53,11 +53,6 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
 
     const headerTemplate = (options) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
-        const value = totalSize / 10000;
-        const formatedValue =
-            fileUploadRef && fileUploadRef.current
-                ? fileUploadRef.current.formatSize(totalSize)
-                : '0 B';
 
         return (
             <div
