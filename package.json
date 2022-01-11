@@ -176,7 +176,7 @@
         "@types/webpack-env": "^1.16.3",
         "@typescript-eslint/eslint-plugin": "^5.2.0",
         "browserslist-config-erb": "^0.0.3",
-        "chalk": "^4.1.2",
+        "chalk": "^5.0.0",
         "concurrently": "^6.3.0",
         "core-js": "^3.19.0",
         "cross-env": "^7.0.3",
