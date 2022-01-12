@@ -230,7 +230,7 @@
     "dependencies": {
         "electron-debug": "^3.2.0",
         "electron-log": "^4.4.1",
-        "electron-updater": "^4.6.4",
+        "electron-updater": "^4.6.5",
         "file-icons-js": "github:websemantics/file-icons-js",
         "history": "5.x.x",
         "primeflex": "^3.1.2",
