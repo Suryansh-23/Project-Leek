@@ -187,7 +187,7 @@
         "electron-builder": "^22.14.5",
         "electron-devtools-installer": "^3.2.0",
         "electron-notarize": "^1.1.1",
-        "electron-rebuild": "^3.2.3",
+        "electron-rebuild": "^3.2.7",
         "eslint": "^7.32.0",
         "eslint-config-airbnb-base": "^14.2.1",
         "eslint-config-erb": "^4.0.3",
