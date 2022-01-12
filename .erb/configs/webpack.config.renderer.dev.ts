@@ -44,6 +44,21 @@ const configuration: webpack.Configuration = {
 
   target: ['web', 'electron-renderer'],
 
+  resolve: {
+    fallback: {
+      fs: 'empty',
+      assert: require.resolve('assert'),
+      buffer: require.resolve('buffer'),
+      events: require.resolve('events'),
+      path: require.resolve('path-browserify'),
+      punycode: require.resolve('punycode'),
+      string_decoder: require.resolve('string_decoder'),
+      sys: require.resolve('util'),
+      url: require.resolve('url'),
+      util: require.resolve('util'),
+      } 
+  },
+
   entry: [
     `webpack-dev-server/client?http://localhost:${port}/dist`,
     'webpack/hot/only-dev-server',

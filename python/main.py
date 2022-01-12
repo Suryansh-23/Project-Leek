@@ -87,4 +87,4 @@ def aes_decryption():
     return jsonify({"string": hex2str(decrypted), "hex": decrypted})
 
 
-app.run(host="127.7.3.0", port=1728, debug=True)
+app.run(host="127.7.3.0", port=2302, debug=True)

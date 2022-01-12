@@ -2,10 +2,11 @@ import os, pickle, shutil
 
 
 class Vault:
-    def __init__(self, Pswrd: str, path: str, tui: bool) -> None:
+    def __init__(self, Pswrd: str, path: str, file_paths: list, tui: bool) -> None:
         self.vault_name = "Vault"
         self.Pswrd = Pswrd
         self.path = path or os.getcwd()
+        self.file_paths = file_paths
         self.tui = tui
         if os.path.isdir("Vault"):
             shutil.rmtree("Vault")
@@ -17,12 +18,10 @@ class Vault:
     def tree_parser(self, path: str) -> dict:
         Tree = {}
         iter = -1
-        for i in os.listdir(path):
+        for i in self.file_paths:
             iter += 1
             if os.path.splitext(i)[-1] != "":  # Filters Out File
                 Tree[iter] = path + "\\" + i
-            else:  # Gets only the directories
-                Tree[i] = self.tree_parser(path + "\\" + i)
         return Tree
 
     def create_vault(self) -> dict:
@@ -51,5 +50,7 @@ class Vault:
 
 
 if __name__ == "__main__":  # Driver Code
-    main = Vault(Pswrd="1234", path="F:\\Project Leɘk\\python\\Test", tui=False)
+    main = Vault(
+        Pswrd="1234", path="F:\\Project Leɘk\\python\\Test", file_paths=[], tui=False
+    )
     main.main()

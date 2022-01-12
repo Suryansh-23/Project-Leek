@@ -14,8 +14,48 @@ import {
 } from 'primereact/fileupload';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
+import { Dialog } from 'primereact/dialog';
 import { getClassWithColor } from 'file-icons-js';
+// import { existsSync } from 'fs';
 import locker from '../../assets/locker.svg';
+
+// const { dialog } = require('electron').remote;
+
+const handleDestination = (
+    folderPath: string,
+    setFolderPath: React.Dispatch<React.SetStateAction<string>>,
+    setShowWarning: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+    const opts = {
+        title: `Destination for File Vault`,
+
+        defaultPath: 'C:\\Users\\%UserProfile%\\Desktop\\',
+
+        buttonLabel: 'Select Folder',
+
+        properties: ['openDirectory'],
+    };
+
+    dialog
+        .showOpenDialog(opts)
+        .then((file) => {
+            // Stating whether dialog operation was cancelled or not.
+            if (!file.canceled && file.filePaths.toString() !== '') {
+                setFolderPath(file.filePaths.toString());
+                if (!existsSync(`${folderPath}\\Vault_Files`)) {
+                    setShowWarning(false);
+                } else {
+                    setShowWarning(true);
+                }
+                return true;
+            }
+            return false;
+        })
+        .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error(err);
+        });
+};
 
 interface FileVaultProps {
     pageVariants: AnimationProps['variants'];
@@ -24,6 +64,8 @@ interface FileVaultProps {
 
 const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
     const [totalSize, setTotalSize] = useState<Number>(0);
+    const [destination, setDestination] = useState<string>('');
+    const [showWarning, setShowWarning] = useState<boolean>(false);
     const fileUploadRef = useRef<null | FileUpload>(null);
 
     useEffect(() => {
@@ -66,12 +108,28 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                 }}
             >
                 {chooseButton}
-                {uploadButton}
-                {cancelButton}
-                <span className="project-text text-3xl text-bold">
-                    {Number(totalSize)}
-                </span>{' '}
-                MB filled
+                {fileUploadRef.current &&
+                'files' in fileUploadRef.current &&
+                fileUploadRef.current.files.length !== 0 ? (
+                    <Button
+                        label="Set Destination"
+                        icon="pi pi-folder-open"
+                        onClick={() => {}}
+                    />
+                ) : (
+                    <Button label="Set Destination" className="p-disabled" />
+                )}
+                {destination !== '' ? (
+                    <Button />
+                ) : (
+                    <Button className="p-disabled" />
+                )}
+                <div className="flex ml-auto align-items-center">
+                    <span className="project-text text-3xl text-bold mx-2">
+                        {Number(totalSize)}
+                    </span>
+                    MB filled
+                </div>
             </div>
         );
     };
@@ -173,6 +231,31 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                     }
                 />
             </Card>
+            <Dialog
+                dismissableMask
+                visible={showWarning}
+                style={{ width: '25rem' }}
+                closable={false}
+                header="Warning"
+                footer={
+                    <div className="p-d-flex p-jc-center p-p-2">
+                        <Button
+                            label="OK"
+                            icon="pi pi-check"
+                            className="p-button-raised"
+                            onClick={() => setShowWarning(false)}
+                            autoFocus
+                        />
+                    </div>
+                }
+                onHide={() => {
+                    setShowWarning(false);
+                }}
+            >
+                The directory <code>{destination}</code> already contains a
+                folder named <code>Vault_Files</code>. So either try deleting it
+                or choosing a different location.
+            </Dialog>
         </motion.div>
     );
 };
