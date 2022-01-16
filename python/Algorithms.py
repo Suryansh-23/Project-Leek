@@ -256,45 +256,109 @@ class aes_decrypt(aes_encrypt):
                     outstr += (k[-2]+k[-1])
         return outstr
 
+class stegano:
 
-class stegano_encrypt():
-    def __init__(self, img, plaintext, step=1):
-        # plaintext must be entered as a regular string of characters
-        self.plaintext = plaintext
-        self.add = img
-        self.step = step
+    def __init__(self,data,img,fp=''):
+        ## fp is the file path where file is to be saved
+        ## img is the image address
+        ## data is the plaintext string
+        ## .jpg images can cause problems with PIL, .png is preferred
+        self.data=data
+        self.img=img
+        if fp=='':
+            self.fp=self.img
+
+    def bindata(self):
+        out=[]
+        for i in self.data:
+            out.append(bin(ord(i)).lstrip('0b'))
+            if len(out[-1])<7:
+                for j in range(7-len(out[-1])):
+                    out[-1]='0'+out[-1]
+        return out
 
     def encrypt(self):
-        img = Image.open(self.add)
-        hist = img.histogram()
-        s = ''
-        for i in self.plaintext:
-            s += ((bin(ord(i))).lstrip('0b'))
-        for j in range(0, len(s), self.step):
-            bin_h = bin(hist[j])
-            bin_h = bin_h[:-1]+s[j]
-            hist[j] = int(bin_h, 2)
-        img.putdata(hist)
-        return img
+        img=Image.open(self.img)
+        bindat=self.bindata()
+        pix=[i for i in img.convert('RGB').getdata()]
+        for i in range(len(bindat)):
+            k=((i)*8)%3
+            o=((i+1)*8)%3
+            m=(i*8)//3
+            n=((i+1)*8)//3
+            l=list(pix[m])
+            L=list(pix[n])
+            if l[k]%2==1:
+                l[k]=l[k]-1
+                pix[m]=tuple(l)
+            if i==len(bindat)-1:
+                if L[o]%2==0 and L[o]!=0:
+                    L[o]=L[o]-1
+                    pix[n]=tuple(L)
+                else:
+                    L[o]=L[o]+1
+                    pix[n]=tuple(L)
+            a=(k+1)%3
+            for j in range(a,a+7):
+                if j%3==0:
+                    out=[]
+                elif j==a:
+                    if k==0:
+                        out=[pix[(i*8)//3][0]]
+                    elif k==1:
+                        out=list(pix[(i*8)//3][:2])
+                ppoint=pix[(i*8+j+1-a)//3][(i*8+j+1-a)%3]
+                if bindat[i][j-a]=='0':
+                    if ppoint%2==1:
+                        out.append(ppoint-1)
+                    else:
+                        out.append(ppoint)
+                else:
+                    if ppoint%2==0 and ppoint!=0:
+                        out.append(ppoint-1)
+                    elif ppoint==0:
+                        out.append(ppoint+1)
+                    else:
+                        out.append(ppoint)
+                if len(out)==3:
+                    pix[(i*8+j+1-a)//3]=tuple(out)
+                elif j==a+6:
+                    if len(out)==1:
+                        pix[(i*8+j+1-a)//3]=tuple(out+list(pix[(i*8+j+1-a)//3][1:]))
+                    else:
+                        pix[(i*8+j+1-a)//3]=tuple(out+[pix[(i*8+j+1-a)//3][2]])
+        img.putdata(pix)
+        print(pix[0],pix[1],pix[2],pix[3])
+        img.save(self.fp)
+        img.close()
 
 
-class stegano_decrypt:
-    def __init__(self, img_obj=None, step=1):
-        # plaintext must be entered as a regular string of characters
-        self.step = step
-        self.img = img_obj
+class stegano_decrypt(stegano):
+
+    def __init__(self,data,img):
+        self.data=data
+        self.img=img
 
     def decrypt(self):
-        hist = self.img.histogram()
-        s = ''
-        outstr = ''
-        for i in range(0, len(hist), self.step):
-            bin_h = bin(hist[i])
-            s += bin_h[-1]
-        try:
-            for i in range(7, len(s), 7):
-                outstr += chr(int(s[i-7:i], 2))
-        except ValueError:
-            pass
-        outstr += chr(int(s[i:], 2))
-        return outstr
+        img=Image.open(self.img)
+        pix=[i for i in img.convert("RGB").getdata()]
+        print(pix[0],pix[1],pix[2])
+        out=[]
+        for i in range(len(pix)):
+            for j in range(0,3):
+                if (i*3+j)%8==0:
+                    if i!=0:
+                        out.append(chr(int(outstr,2)))
+                    outstr='0b'
+                    if pix[i][j]%2==1:
+                        break
+                else:
+                    curp=pix[i][j]
+                    if curp%2==0:
+                        outstr=outstr+'0'
+                    else:
+                        outstr=outstr+'1'
+            else:
+                continue
+            break
+        return "".join(out)         
