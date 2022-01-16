@@ -256,7 +256,7 @@ class aes_decrypt(aes_encrypt):
                     outstr += (k[-2]+k[-1])
         return outstr
 
-class stegano:
+class stegano_encrypt:
 
     def __init__(self,data,img,fp=''):
         ## fp is the file path where file is to be saved
@@ -333,7 +333,7 @@ class stegano:
         img.close()
 
 
-class stegano_decrypt(stegano):
+class stegano_decrypt(stegano_encrypt):
 
     def __init__(self,data,img):
         self.data=data
