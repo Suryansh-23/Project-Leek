@@ -156,4 +156,4 @@ def stegano_decryption():
         return jsonify(False), 500
 
 
-app.run(host="127.7.3.0", port=230)
+app.run(host="127.7.3.0", port=2302)
