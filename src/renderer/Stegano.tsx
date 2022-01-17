@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import * as React from 'react';
 import { useState, useRef } from 'react';
 import { motion, AnimationProps } from 'framer-motion';
@@ -5,8 +6,10 @@ import { Card } from 'primereact/card';
 import { FileUpload } from 'primereact/fileupload';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
-import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Dialog } from 'primereact/dialog';
+import { shell } from 'electron';
+import { dirname } from 'path';
 
 interface SteganoProps {
     pageVariants: AnimationProps['variants'];
@@ -15,10 +18,56 @@ interface SteganoProps {
 
 const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
     const [totalSize, setTotalSize] = useState<number>(0);
-    const [privateKey, setPrivateKey] = useState<string>('');
     const [msg, setMsg] = useState<string>('');
+    const [dialogVisibility, setDialogVisibility] = useState<boolean>(false);
+    const [res, setRes] = useState<object>({});
     const fileUploadRef = useRef<null | FileUpload>(null);
     const toast = useRef(null);
+
+    function handleEncode(files: Array) {
+        fetch('http://127.7.3.0:2302/stegano_encryption', {
+            headers: {
+                'Img-Addr': JSON.stringify(files),
+                String: msg,
+            },
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                if (data) {
+                    files.forEach((i: string) => {
+                        shell.openPath(dirname(i));
+                    });
+                }
+                return data;
+            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(err);
+                return false;
+            });
+    }
+
+    function handleDecode(files: Array) {
+        fetch('http://127.7.3.0:2302/stegano_decryption', {
+            headers: {
+                'Img-Addr': JSON.stringify(files),
+            },
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setRes(data);
+                return data;
+            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(err);
+                return false;
+            });
+    }
 
     const onTemplateSelect = (e) => {
         let tmpTotalSize = totalSize;
@@ -64,7 +113,6 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
                 }}
             >
                 {chooseButton}
-                {uploadButton}
                 {cancelButton}
             </div>
         );
@@ -133,14 +181,10 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
         icon: 'pi pi-fw pi-image',
         className: 'button-gradient p-button-oulined',
     };
-    const uploadOptions = {
-        icon: 'pi pi-fw pi-cloud-upload',
-        iconOnly: true,
-        className: 'button-gradient p-button-outlined',
-    };
+
     const cancelOptions = {
+        label: 'Cancel',
         icon: 'pi pi-fw pi-times',
-        iconOnly: true,
         className: 'button-gradient p-button-outlined',
     };
 
@@ -168,6 +212,7 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
                         ref={fileUploadRef}
                         name="demo[]"
                         accept="image/*"
+                        customUpload
                         maxFileSize={1000000}
                         style={{ width: '-webkit-fill-available' }}
                         onUpload={onTemplateUpload}
@@ -179,7 +224,6 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
                         progressBarTemplate={<></>}
                         emptyTemplate={emptyTemplate}
                         chooseOptions={chooseOptions}
-                        uploadOptions={uploadOptions}
                         cancelOptions={cancelOptions}
                     />
                 </Card>
@@ -194,24 +238,77 @@ const Stegano: React.FC<SteganoProps> = ({ pageVariants, hash }) => {
                         onChange={(e) => setMsg(e.target.value)}
                         rows={10}
                     />
-                    <InputText
-                        className="border-change blur line-height-3"
-                        value={privateKey}
-                        onChange={(e) => setPrivateKey(e.target.value)}
-                        placeholder="Enter Private Key"
-                        style={{ width: '-webkit-fill-available' }}
-                    />
                     <div className="flex justify-content-center pb-3 mt-3">
                         <Button
-                            className={`button-gradient ${
-                                privateKey && (totalSize > 0 || msg !== '')
-                                    ? ''
-                                    : 'p-disabled'
+                            className={`button-gradient mr-3 ${
+                                totalSize > 0 && msg !== '' ? '' : 'p-disabled'
                             }`}
-                            label={totalSize ? 'Decode' : 'Encode'}
+                            label="Encode"
+                            onClick={() => {
+                                const tmp = Array.from(
+                                    fileUploadRef.current.files
+                                );
+                                const files = [];
+                                for (const i of tmp) {
+                                    files.push(i.path);
+                                }
+                                handleEncode(files);
+                            }}
+                        />
+                        <Button
+                            className={`button-gradient ${
+                                totalSize > 0 ? '' : 'p-disabled'
+                            }`}
+                            label="Decode"
+                            onClick={() => {
+                                const tmp = Array.from(
+                                    fileUploadRef.current.files
+                                );
+                                const files = [];
+                                for (const i of tmp) {
+                                    files.push(i.path);
+                                }
+                                handleDecode(files);
+                                setDialogVisibility(true);
+                            }}
                         />
                     </div>
                 </Card>
+                <Dialog
+                    header={
+                        <div className="flex align-items-center justify-content-center">
+                            <span className="text-2xl ml-auto">Result</span>
+                            <Button
+                                icon="pi pi-copy"
+                                className="blur border-change icon-btn ml-2 -mr-5"
+                                onClick={() =>
+                                    navigator.clipboard.writeText(
+                                        JSON.stringify(res)
+                                    )
+                                }
+                            />
+                            <Button
+                                icon="pi pi-times"
+                                className="blur border-change icon-btn ml-auto"
+                                onClick={() => setDialogVisibility(false)}
+                            />
+                        </div>
+                    }
+                    blockScroll
+                    visible={dialogVisibility}
+                    dismissableMask
+                    closable={false}
+                    style={{ width: '25rem' }}
+                    onHide={() => setDialogVisibility(false)}
+                >
+                    <InputTextarea
+                        className="border-change blur mt-2"
+                        value={JSON.stringify(res)}
+                        rows={10}
+                        placeholder="Decoded String"
+                        readOnly
+                    />
+                </Dialog>
             </div>
         </motion.div>
     );

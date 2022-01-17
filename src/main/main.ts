@@ -11,10 +11,11 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { ChildProcess, execFile } from 'child_process';
+import { existsSync } from 'fs';
 import { stdout } from 'process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -26,8 +27,6 @@ export default class AppUpdater {
         autoUpdater.checkForUpdatesAndNotify();
     }
 }
-let backend: ChildProcess;
-
 let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
@@ -44,30 +43,19 @@ if (process.env.NODE_ENV === 'production') {
 const isDevelopment =
     process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
+const backend = execFile('./python/main.exe', (error, sout, stderr) => {
+    stdout.write(`Python : ${sout}`);
+    if (error) {
+        console.error(stderr);
+        throw error;
+    }
+    console.log(stdout);
+});
 if (isDevelopment) {
     require('electron-debug')();
-    backend = execFile(
-        'python',
-        ['./python/main.py'],
-        (error, sout, stderr) => {
-            stdout.write(`Python : ${sout}`);
-            if (error) {
-                console.error(stderr);
-                throw error;
-            }
-            console.log(stdout);
-        }
-    );
-} else {
-    backend = execFile('./python/main.py', (error, sout, stderr) => {
-        stdout.write(`Python : ${sout}`);
-        if (error) {
-            console.error(stderr);
-            throw error;
-        }
-        console.log(stdout);
-    });
-}
+
+} 
+
 
 const installExtensions = async () => {
     const installer = require('electron-devtools-installer');
@@ -101,7 +89,8 @@ const createWindow = async () => {
         height: 728,
         icon: getAssetPath('icon.png'),
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: true,
+            contextIsolation: false,
             webSecurity: false,
         },
     });
@@ -138,11 +127,50 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
+ipcMain.on('file-vault-set-destination', (e) => {
+    const opts = {
+        title: `Destination for File Vault`,
+
+        defaultPath: 'C:\\Users\\%UserProfile%\\Desktop\\',
+
+        buttonLabel: 'Select Folder',
+
+        properties: ['openDirectory'],
+    };
+
+    dialog
+        .showOpenDialog(opts)
+        .then((file) => {
+            // Stating whether dialog operation was cancelled or not.
+            if (!file.canceled && file.filePaths.toString() !== '') {
+                const folderPath = file.filePaths.toString();
+                if (existsSync(`${folderPath}\\Vault`)) {
+                    e.returnValue = JSON.stringify({
+                        exists: true,
+                        path: folderPath,
+                    });
+                } else {
+                    e.returnValue = JSON.stringify({
+                        exists: false,
+                        path: folderPath,
+                    });
+                }
+                return true;
+            }
+            return false;
+        })
+        .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error(err);
+        });
+});
+
 app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
     // after all windows have been closed
     if (process.platform !== 'darwin') {
         app.quit();
+        backend.kill('SIGINT')
     }
 });
 

@@ -41,7 +41,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
     ];
 
     const callCipherKey = () => {
-        fetch('http://127.7.3.0:1728/cipher_key', {
+        fetch('http://127.7.3.0:2302/cipher_key', {
             headers: {
                 'Encryption-Type': aesData['Encryption-Type'],
             },
@@ -63,7 +63,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
     };
 
     const callEncrypt = () => {
-        fetch('http://127.7.3.0:1728/aes_encryption', {
+        fetch('http://127.7.3.0:2302/aes_encryption', {
             headers: {
                 'AES-String': aesData['Encrypt-String'],
                 'Cipher-Key': aesData['Cipher-Key'],
@@ -92,7 +92,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
     };
 
     const callDecrypt = () => {
-        fetch('http://127.7.3.0:1728/aes_decryption', {
+        fetch('http://127.7.3.0:2302/aes_decryption', {
             headers: {
                 'AES-String': aesData['Decrypt-String'],
                 'Cipher-Key': aesData['Cipher-Key'],
@@ -131,7 +131,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
         >
             <Card className="border-change shadow-6 mb-5 p-2">
                 <div className="flex flex-row p-2 text-center text-white text-6xl justify-content-center">
-                    AES-128 Bit
+                    AES
                     <span className="project-text px-2">Encryption</span>
                 </div>
             </Card>

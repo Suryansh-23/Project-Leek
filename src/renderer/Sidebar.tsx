@@ -22,7 +22,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, setShowSidebar }) => {
             label: 'String Encryption',
             items: [
                 {
-                    label: 'AES-128 Bit Encryption',
+                    label: 'AES Encryption',
                     icon: 'pi pi-key',
                     command: () => {
                         window.location.hash = '#/aes';

@@ -42,7 +42,22 @@ const configuration: webpack.Configuration = {
 
   mode: 'development',
 
-  target: ['web', 'electron-renderer'],
+  target: 'electron-renderer',
+
+  resolve: {
+    fallback: {
+      fs: 'empty',
+      assert: require.resolve('assert'),
+      buffer: require.resolve('buffer'),
+      events: require.resolve('events'),
+      path: require.resolve('path-browserify'),
+      punycode: require.resolve('punycode'),
+      string_decoder: require.resolve('string_decoder'),
+      sys: require.resolve('util'),
+      url: require.resolve('url'),
+      util: require.resolve('util'),
+      } 
+  },
 
   entry: [
     `webpack-dev-server/client?http://localhost:${port}/dist`,
@@ -56,9 +71,6 @@ const configuration: webpack.Configuration = {
     path: webpackPaths.distRendererPath,
     publicPath: '/',
     filename: 'renderer.dev.js',
-    library: {
-      type: 'umd',
-    },
   },
 
   module: {

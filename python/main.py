@@ -1,7 +1,12 @@
-from Algorithms import aes_encrypt, aes_decrypt, stegano_encrypt, stegano_decrypt
+from AES import aes_encrypt, aes_decrypt
+from Steganography import stegano_encrypt, stegano_decrypt
+from Encoder import Vault
 
 from random import choices
 from string import ascii_letters, digits
+from json import loads
+from zipfile import ZipFile
+from os import rename, path
 
 from flask import Flask
 from flask import jsonify, request
@@ -87,4 +92,68 @@ def aes_decryption():
     return jsonify({"string": hex2str(decrypted), "hex": decrypted})
 
 
-app.run(host="127.7.3.0", port=1728, debug=True)
+@app.route("/file_vault", methods=["GET"])
+def file_vault():
+    try:
+        pswrd = request.headers.get("Password")
+        vault_path = request.headers.get("Vault-Path")
+        file_paths = loads(request.headers.get("File-Paths"))
+
+        with ZipFile(
+            ".\\python\\File-Vault-v1.0.0-win32-x64.zip",
+            "r",
+        ) as z:
+            z.extractall(vault_path)
+            rename(
+                vault_path + r"\\File-Vault-v1.0.0-win32-x64",
+                vault_path + r"\\Vault",
+            )
+
+        main = Vault(
+            Pswrd=pswrd, path=vault_path + "\\Vault", file_paths=file_paths, tui=False
+        )
+        main.main()
+        return jsonify(True)
+    except:
+        return jsonify(False), 500
+
+
+@app.route("/stegano_encryption", methods=["GET"])
+def stegano_encryption():
+    try:
+        img = loads(request.headers.get("Img-Addr"))
+        data = request.headers.get("String")
+
+        for i in img:
+            ext = path.splitext(i)[1]
+            name = path.split(path.splitext(i)[0])[1]
+            folder = path.split(i)[0]
+            fp = folder + "\\" + name + "_Encrypted" + ext
+            stegano_obj = stegano_encrypt(data=data, img=i, fp=fp)
+            stegano_obj.encrypt()
+
+        return jsonify(True)
+    except:
+        return jsonify(False), 500
+
+
+@app.route("/stegano_decryption", methods=["GET"])
+def stegano_decryption():
+    try:
+        img = loads(request.headers.get("Img-Addr"))
+
+        main = {}
+        for i in img:
+            ext = path.splitext(i)[1]
+            name = path.split(path.splitext(i)[0])[1]
+            folder = path.split(i)[0]
+            fp = folder + "\\" + name + "_Encrypted" + ext
+            stegano_obj = stegano_decrypt(img=i)
+            main[path.basename(i)] = stegano_obj.decrypt()
+
+        return jsonify(main)
+    except:
+        return jsonify(False), 500
+
+
+app.run(host="127.7.3.0", port=230)

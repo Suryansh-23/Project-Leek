@@ -2,27 +2,22 @@ import os, pickle, shutil
 
 
 class Vault:
-    def __init__(self, Pswrd: str, path: str, tui: bool) -> None:
+    def __init__(self, Pswrd: str, path: str, file_paths: list, tui: bool) -> None:
         self.vault_name = "Vault"
         self.Pswrd = Pswrd
         self.path = path or os.getcwd()
+        self.file_paths = file_paths
         self.tui = tui
-        if os.path.isdir("Vault"):
-            shutil.rmtree("Vault")
-        if os.path.isdir(self.path + "\\Vault"):
-            shutil.rmtree(self.path + "\\Vault")
         self.tree = self.tree_parser(self.path)
         self.Vault = self.create_vault()
 
     def tree_parser(self, path: str) -> dict:
         Tree = {}
         iter = -1
-        for i in os.listdir(path):
+        for i in self.file_paths:
             iter += 1
             if os.path.splitext(i)[-1] != "":  # Filters Out File
-                Tree[iter] = path + "\\" + i
-            else:  # Gets only the directories
-                Tree[i] = self.tree_parser(path + "\\" + i)
+                Tree[iter] = i
         return Tree
 
     def create_vault(self) -> dict:
@@ -41,9 +36,8 @@ class Vault:
     def main(self) -> None:
         self.Vault["__Tree__"] = self.tree
         self.Vault["__Pswrd__"] = self.Pswrd
-        os.mkdir(self.path + "\\Vault")
         self.fill_vault(self.tree, self.path)
-        with open(self.path + "\\Vault\\Vault.pickle", "wb") as fobj:
+        with open(self.path + "\\Vault.pickle", "wb") as fobj:
             pickle.dump(self.Vault, fobj)
         if self.tui:  # Check for tui flag
             shutil.copyfile(".\Vault.exe", self.path + "\\Vault\\Vault.exe")
@@ -51,5 +45,7 @@ class Vault:
 
 
 if __name__ == "__main__":  # Driver Code
-    main = Vault(Pswrd="1234", path="F:\\Project Leɘk\\python\\Test", tui=False)
+    main = Vault(
+        Pswrd="1234", path="F:\\Project Leɘk\\python\\Test", file_paths=[], tui=False
+    )
     main.main()

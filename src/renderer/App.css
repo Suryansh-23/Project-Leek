@@ -123,6 +123,7 @@ textarea {
     );
 }
 .button-gradient:hover {
+    color: black !important;
     background: var(--project-color) !important;
 }
 
@@ -214,7 +215,7 @@ span.p-button.p-fileupload-choose.p-component:hover {
     background-color: var(--project-color);
     border-radius: 12px !important;
 }
-/* .p-button.p-component:not(.p-button-danger) {
+.p-button.p-component:not(.p-button-danger) {
     color: rgba(255, 255, 255, 0.8);
     border-color: var(--project-color) !important;
     background: linear-gradient(
@@ -230,7 +231,7 @@ span.p-button.p-fileupload-choose.p-component:hover {
     background-color: var(--project-color);
     border-color: var(--project-color) !important;
     border-radius: 12px !important;
-} */
+}
 
 .p-fileupload-content {
     backdrop-filter: blur(8px) saturate(175%) !important;
