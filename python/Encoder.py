@@ -8,10 +8,6 @@ class Vault:
         self.path = path or os.getcwd()
         self.file_paths = file_paths
         self.tui = tui
-        if os.path.isdir("Vault"):
-            shutil.rmtree("Vault")
-        if os.path.isdir(self.path + "\\Vault"):
-            shutil.rmtree(self.path + "\\Vault")
         self.tree = self.tree_parser(self.path)
         self.Vault = self.create_vault()
 
@@ -21,7 +17,7 @@ class Vault:
         for i in self.file_paths:
             iter += 1
             if os.path.splitext(i)[-1] != "":  # Filters Out File
-                Tree[iter] = path + "\\" + i
+                Tree[iter] = i
         return Tree
 
     def create_vault(self) -> dict:
@@ -40,9 +36,8 @@ class Vault:
     def main(self) -> None:
         self.Vault["__Tree__"] = self.tree
         self.Vault["__Pswrd__"] = self.Pswrd
-        os.mkdir(self.path + "\\Vault")
         self.fill_vault(self.tree, self.path)
-        with open(self.path + "\\Vault\\Vault.pickle", "wb") as fobj:
+        with open(self.path + "\\Vault.pickle", "wb") as fobj:
             pickle.dump(self.Vault, fobj)
         if self.tui:  # Check for tui flag
             shutil.copyfile(".\Vault.exe", self.path + "\\Vault\\Vault.exe")

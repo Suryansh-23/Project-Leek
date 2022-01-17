@@ -42,7 +42,7 @@ const configuration: webpack.Configuration = {
 
   mode: 'development',
 
-  target: ['web', 'electron-renderer'],
+  target: 'electron-renderer',
 
   resolve: {
     fallback: {
@@ -71,9 +71,6 @@ const configuration: webpack.Configuration = {
     path: webpackPaths.distRendererPath,
     publicPath: '/',
     filename: 'renderer.dev.js',
-    library: {
-      type: 'umd',
-    },
   },
 
   module: {

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AnimationProps, motion } from 'framer-motion';
 import { Card } from 'primereact/card';
 import { Chip } from 'primereact/chip';
+import logo from '../../assets/icon.png';
 
 interface HomeProps {
     pageVariants: AnimationProps['variants'];
@@ -23,10 +24,17 @@ const Home: React.FC<HomeProps> = ({ pageVariants, hash }) => {
             <div className="flex flex-column p-2">
                 <Card className="border-change shadow-6">
                     <div className="p-component text-white flex flex-column">
-                        <div className="text-center p-3 text-7xl line-height-2 select-none">
-                            Project
-                            <br />
-                            <span className="project-text">Leɘk</span>
+                        <div className="flex mx-auto align-items-center">
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                className="w-8rem h-8rem"
+                            />
+                            <div className="text-center p-3 text-7xl line-height-2 select-none">
+                                Project
+                                <br />
+                                <span className="project-text">Leɘk</span>
+                            </div>
                         </div>
                         <div className="text-center font-italic text-4xl line-height-1 p-2">
                             <span className="project-text">Secrets</span> are
@@ -43,7 +51,7 @@ const Home: React.FC<HomeProps> = ({ pageVariants, hash }) => {
                         <div className="align-self-center pb-2">
                             <a
                                 className="appearance-none p-2"
-                                href="https://github.com"
+                                href="https://github.com/Suryansh-23/Project-Leek"
                                 rel="noreferrer"
                                 target="_blank"
                             >

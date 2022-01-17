@@ -131,7 +131,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
         >
             <Card className="border-change shadow-6 mb-5 p-2">
                 <div className="flex flex-row p-2 text-center text-white text-6xl justify-content-center">
-                    AES-128 Bit
+                    AES
                     <span className="project-text px-2">Encryption</span>
                 </div>
             </Card>

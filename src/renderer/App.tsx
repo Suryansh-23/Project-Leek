@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import useHash from './useHash';
 import 'primereact/resources/themes/vela-blue/theme.css';
@@ -15,7 +15,7 @@ import SideBar from './Sidebar';
 import FileVault from './FileVault';
 import Stegano from './Stegano';
 
-export default function App() {
+const App = () => {
     const [showSidebar, setShowSidebar] = useState(false);
     const [hash] = useHash();
 
@@ -51,23 +51,38 @@ export default function App() {
             <SideButton setShowSidebar={setShowSidebar} />
             <AnimatePresence exitBeforeEnter initial={false}>
                 <HashRouter>
-                    <Switch>
-                        <Route path="/" exact>
-                            <Home pageVariants={pageVariants} hash={hash} />
-                        </Route>
-                        <Route path="/aes" exact>
-                            <AES pageVariants={pageVariants} hash={hash} />
-                        </Route>
-                        <Route path="/file-vault" exact>
-                            <FileVault
-                                pageVariants={pageVariants}
-                                hash={hash}
-                            />
-                        </Route>
-                        <Route path="/stegano" exact>
-                            <Stegano pageVariants={pageVariants} hash={hash} />
-                        </Route>
-                    </Switch>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <Home pageVariants={pageVariants} hash={hash} />
+                            }
+                        />
+                        <Route
+                            path="/aes"
+                            element={
+                                <AES pageVariants={pageVariants} hash={hash} />
+                            }
+                        />
+                        <Route
+                            path="/file-vault"
+                            element={
+                                <FileVault
+                                    pageVariants={pageVariants}
+                                    hash={hash}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/stegano"
+                            element={
+                                <Stegano
+                                    pageVariants={pageVariants}
+                                    hash={hash}
+                                />
+                            }
+                        />
+                    </Routes>
                 </HashRouter>
             </AnimatePresence>
             <SideBar
@@ -76,4 +91,6 @@ export default function App() {
             />
         </>
     );
-}
+};
+
+export default App;

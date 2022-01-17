@@ -123,6 +123,7 @@ textarea {
     );
 }
 .button-gradient:hover {
+    color: black !important;
     background: var(--project-color) !important;
 }
 

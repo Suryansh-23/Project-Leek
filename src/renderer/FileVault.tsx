@@ -9,53 +9,15 @@ import { Card } from 'primereact/card';
 import {
     FileUpload,
     FileUploadHeaderTemplateOptions,
-    FileUploadUploadParams,
     ItemTemplateOptions,
 } from 'primereact/fileupload';
 import { Button } from 'primereact/button';
 import { Tag } from 'primereact/tag';
+import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
 import { getClassWithColor } from 'file-icons-js';
-// import { existsSync } from 'fs';
+import { ipcRenderer, shell } from 'electron';
 import locker from '../../assets/locker.svg';
-
-// const { dialog } = require('electron').remote;
-
-const handleDestination = (
-    folderPath: string,
-    setFolderPath: React.Dispatch<React.SetStateAction<string>>,
-    setShowWarning: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-    const opts = {
-        title: `Destination for File Vault`,
-
-        defaultPath: 'C:\\Users\\%UserProfile%\\Desktop\\',
-
-        buttonLabel: 'Select Folder',
-
-        properties: ['openDirectory'],
-    };
-
-    dialog
-        .showOpenDialog(opts)
-        .then((file) => {
-            // Stating whether dialog operation was cancelled or not.
-            if (!file.canceled && file.filePaths.toString() !== '') {
-                setFolderPath(file.filePaths.toString());
-                if (!existsSync(`${folderPath}\\Vault_Files`)) {
-                    setShowWarning(false);
-                } else {
-                    setShowWarning(true);
-                }
-                return true;
-            }
-            return false;
-        })
-        .catch((err) => {
-            // eslint-disable-next-line no-console
-            console.error(err);
-        });
-};
 
 interface FileVaultProps {
     pageVariants: AnimationProps['variants'];
@@ -64,7 +26,12 @@ interface FileVaultProps {
 
 const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
     const [totalSize, setTotalSize] = useState<Number>(0);
-    const [destination, setDestination] = useState<string>('');
+    type destinationProps = {
+        exists: boolean;
+        path: string;
+    };
+    const [destination, setDestination] = useState<destinationProps>({});
+    const [pswrd, setPswrd] = useState<string>('dE0uxGWKUwLcUpIRHIlywj3f');
     const [showWarning, setShowWarning] = useState<boolean>(false);
     const fileUploadRef = useRef<null | FileUpload>(null);
 
@@ -74,16 +41,49 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
         el?.setAttribute('directory', '');
     }, []);
 
-    const onTemplateUpload = (e: FileUploadUploadParams) => {
-        let tempSize = 0;
-        Array.from(e.file).forEach((f) => {
-            tempSize += f.size || 0;
-            // eslint-disable-next-line no-console
-            console.log(f);
-        });
-        setTotalSize(tempSize);
-        console.log('tempSize', totalSize);
+    const callCipherKey = () => {
+        fetch('http://127.7.3.0:2302/cipher_key', {
+            headers: {
+                'Encryption-Type': '1',
+            },
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setPswrd(data);
+                return true;
+            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(err);
+                return false;
+            });
     };
+
+    function handleUpload(files: Array) {
+        fetch('http://127.7.3.0:2302/file_vault', {
+            headers: {
+                Password: pswrd,
+                'Vault-Path': destination.path,
+                'File-Paths': JSON.stringify(files),
+            },
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                if (data) {
+                    shell.openPath(`${destination.path}\\Vault`);
+                }
+                return data;
+            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(err);
+                return false;
+            });
+    }
 
     const headerTemplate: React.FC<FileUploadHeaderTemplateOptions> = (
         options
@@ -114,16 +114,29 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                     <Button
                         label="Set Destination"
                         icon="pi pi-folder-open"
-                        onClick={() => {}}
+                        onClick={() => {
+                            const tmp = JSON.parse(
+                                ipcRenderer.sendSync(
+                                    'file-vault-set-destination'
+                                )
+                            );
+                            console.log(tmp);
+
+                            setDestination(tmp);
+                            if (tmp.exists) {
+                                setShowWarning(true);
+                            }
+                        }}
                     />
                 ) : (
-                    <Button label="Set Destination" className="p-disabled" />
+                    <Button
+                        label="Set Destination"
+                        icon="pi pi-folder-open"
+                        className="p-disabled"
+                    />
                 )}
-                {destination !== '' ? (
-                    <Button />
-                ) : (
-                    <Button className="p-disabled" />
-                )}
+                {uploadButton}
+                {cancelButton}
                 <div className="flex ml-auto align-items-center">
                     <span className="project-text text-3xl text-bold mx-2">
                         {Number(totalSize)}
@@ -193,15 +206,50 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                 </div>
             </Card>
             <Card className="border-change shadow-6 mb-5">
+                <div className="flex flex-row align-items-center mb-2">
+                    <InputText
+                        className="border-change blur line-height-3 webkit-width text-center"
+                        value={pswrd}
+                        readOnly
+                        placeholder="Cipher Key"
+                    />
+                    <Button
+                        icon="pi pi-copy"
+                        className="blur border-change icon-btn mr-3 -ml-5"
+                        onClick={() => {
+                            navigator.clipboard.writeText(pswrd);
+                        }}
+                    />
+                    <Button
+                        className="button-gradient"
+                        style={{ width: '15rem' }}
+                        label="Generate Password"
+                        onClick={() => {
+                            callCipherKey();
+                        }}
+                    />
+                </div>
                 <FileUpload
                     name="demo[]"
+                    customUpload
                     multiple
                     accept="/*"
                     ref={fileUploadRef}
                     maxFileSize={128000000 - Number(totalSize)}
-                    onUpload={onTemplateUpload}
                     headerTemplate={headerTemplate}
                     itemTemplate={itemTemplate}
+                    uploadHandler={() => {
+                        if (!destination.exists && destination.path) {
+                            const tmp = Array.from(fileUploadRef.current.files);
+                            const files = [];
+                            for (const i of tmp) {
+                                files.push(i.path);
+                            }
+                            handleUpload(files);
+                        } else {
+                            setShowWarning(true);
+                        }
+                    }}
                     onClear={() => {
                         console.log('Cleared');
                         setTotalSize(0);
@@ -252,9 +300,9 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                     setShowWarning(false);
                 }}
             >
-                The directory <code>{destination}</code> already contains a
-                folder named <code>Vault_Files</code>. So either try deleting it
-                or choosing a different location.
+                The directory <code>{destination.path}</code> already contains a
+                folder named <code>Vault</code>. So either try deleting it or
+                choosing a different location.
             </Dialog>
         </motion.div>
     );
