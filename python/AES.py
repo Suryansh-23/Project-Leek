@@ -193,11 +193,11 @@ class aes_encrypt:
         for i in range(0, len(out)):
             temp = out[i]
             temp = self.AddroundKeys(Rkeys, 0, temp)
-            for j in range(1, 10):
+            for j in range(1, 10+N*2):
                 temp = self.SubBytes(self.ShiftRows(
                     self.MixColumns(self.AddroundKeys(Rkeys, j, temp))))
             temp = self.SubBytes(self.ShiftRows(
-                self.AddroundKeys(Rkeys, 10, (temp))))
+                self.AddroundKeys(Rkeys, 10+N*2, (temp))))
             out[i] = temp
         outstr = '0x'
         for i in out:
@@ -239,9 +239,9 @@ class aes_decrypt(aes_encrypt):
         out = self.state_array()
         Rkeys = self.key_conversion()
         for i in range(0, len(out)):
-            temp = self.AddroundKeys(Rkeys, 10, self.ShiftRows(
+            temp = self.AddroundKeys(Rkeys, 10+N*2, self.ShiftRows(
                 self.ISubBytes(out[i]), Inverse=True))
-            for j in range(9, 0, -1):
+            for j in range(9+N*2, 0, -1):
                 temp = self.AddroundKeys(Rkeys, j, self.MixColumns(
                     self.ShiftRows(self.ISubBytes(temp), Inverse=True), I=True))
             temp = self.AddroundKeys(Rkeys, 0, temp)
