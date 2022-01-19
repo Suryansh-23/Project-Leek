@@ -125,10 +125,9 @@ def stegano_encryption():
         data = request.headers.get("String")
 
         for i in img:
-            ext = path.splitext(i)[1]
             name = path.split(path.splitext(i)[0])[1]
             folder = path.split(i)[0]
-            fp = folder + "\\" + name + "_Encrypted" + ext
+            fp = folder + "\\" + name + "_Encrypted" + ".png"
             stegano_obj = stegano_encrypt(data=data, img=i, fp=fp)
             stegano_obj.encrypt()
 
@@ -144,10 +143,6 @@ def stegano_decryption():
 
         main = {}
         for i in img:
-            ext = path.splitext(i)[1]
-            name = path.split(path.splitext(i)[0])[1]
-            folder = path.split(i)[0]
-            fp = folder + "\\" + name + "_Encrypted" + ext
             stegano_obj = stegano_decrypt(img=i)
             main[path.basename(i)] = stegano_obj.decrypt()
 

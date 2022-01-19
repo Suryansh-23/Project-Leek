@@ -53,9 +53,7 @@ const backend = execFile('./python/main.exe', (error, sout, stderr) => {
 });
 if (isDevelopment) {
     require('electron-debug')();
-
-} 
-
+}
 
 const installExtensions = async () => {
     const installer = require('electron-devtools-installer');
@@ -128,6 +126,10 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
+ipcMain.on('open-DevTools', () => {
+    mainWindow?.openDevTools();
+});
+
 ipcMain.on('file-vault-set-destination', (e) => {
     const opts = {
         title: `Destination for File Vault`,
@@ -171,7 +173,7 @@ app.on('window-all-closed', () => {
     // after all windows have been closed
     if (process.platform !== 'darwin') {
         app.quit();
-        backend.kill('SIGINT')
+        backend.kill('SIGINT');
     }
 });
 

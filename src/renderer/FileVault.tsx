@@ -200,6 +200,9 @@ const FileVault: React.FC<FileVaultProps> = ({ pageVariants, hash }) => {
                         src={locker}
                         className="locker-logo px-3"
                         alt="File-Vault Logo"
+                        onClick={() => {
+                            ipcRenderer.send('open-DevTools', '');
+                        }}
                     />
                     File
                     <span className="project-text px-2">Vault</span>
