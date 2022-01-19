@@ -1,4 +1,6 @@
 # **Project Leek**
+## Motivation for The Project
+With the pool of information all over the globe increasing each second with every social media post , video , document or any multimedia file. The need for an open source tool developed solely to fulfill this purpose of an _**encrypted medium of transfer of information**_ motivated us to start this project. Our main vision is to enable a utility that can serve various tasks and objectives in a single software suite that is _**FOSS (Free and Open Source Software)**_. With our diverse cryptographic functions anyone with minimum knowledge can find very useful applications and protect his/her precious information. Thus, we intend to bring awareness to the common man about the highly unknown domain of cryptography. 
 ## **Features of this project**
 1. Advanced Encryption Standard 128, 192, and 256 bit encryption and decryption
 2. Image based Steganography using LSB algorithm
