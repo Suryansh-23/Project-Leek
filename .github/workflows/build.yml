@@ -12,7 +12,7 @@ jobs:
         ref: electron
     - uses: actions/setup-node@master
       with:
-        node-version: 10.16
+        node-version: 14.5.4
     - name: see directory in electron_dist
       run: ls ./electron
     - name: add key to single keychain
