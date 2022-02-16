@@ -152,6 +152,8 @@
         ]
     },
     "devDependencies": {
+        "@babel/core": "^7.9.0",
+        "@babel/preset-react": "^7.16.7",
         "@pmmmwh/react-refresh-webpack-plugin": "0.5.4",
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
         "@testing-library/jest-dom": "^5.16.1",
@@ -220,6 +222,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
+        "@babel/preset-env": "^7.16.11",
         "app-builder-lib": "^22.13.1",
         "cross-spawn": "^7.0.3",
         "electron-debug": "^3.2.0",
@@ -231,7 +234,7 @@
         "path-browserify": "^1.0.1",
         "primeflex": "^3.1.2",
         "primeicons": "^5.0.0",
-        "primereact": "^7.1.0",
+        "primereact": "^7.2.0",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-router-dom": "^6.2.1",
