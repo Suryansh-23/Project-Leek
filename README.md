@@ -16,6 +16,22 @@ This project is created while keeping user privacy and security in mind. So plea
 
 
 # How does this Work ?
+## Tech Stack 
+The Tech Stack we've used in this Project and its subsidiary repo are the following - 
+- `Electron` - For Building a Cross-Platform Desktop App
+- `Python` - For Major Backend API to use for cryptographic functions to be called by the frontend
+- `React` - For Managing Frontend and State of the UI
+- `TypeScript` - Used with React and Electron in the App 
+
+## Process Sequence 
+The following is a sequence diagram for the lifecycle of events in the project sequentially -
+```mermaid 
+sequenceDiagram
+    participant renderer 
+    participant main
+    participant python API
+```
+
 ## **AES.py file**
 AES.py contains several functions that are standard practice for implementing the algorithm in the aes_encrypt and the aes_decrypt classes. These functions are:
 - AddRoundKeys
