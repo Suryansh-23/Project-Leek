@@ -106,7 +106,7 @@ autonumber
  The code is used to encrypt a file using the stegano algorithm.
  The code above will return a dictionary of all encrypted files that have been uploaded.
 
-## `AES.py` file**
+## `AES.py` file
 AES.py contains several functions that are standard practice for implementing the algorithm in the aes_encrypt and the aes_decrypt classes. These functions are:
 - AddRoundKeys
 - MixColumns
