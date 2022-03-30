@@ -11,8 +11,12 @@ Currently we are only supporting Windows but future updates would include MacOS 
 - Advanced Encryption Standard 128, 192, and 256 bit encryption and decryption
 - Image based Steganography using LSB algorithm
 - AES based Portable File Vault without Size Limits
+
 ## **Contributing** 
-This project is created while keeping user privacy and security in mind. So please feel free to suggest any changes, bugs or security issues you find while using. You can create a Issue in this Github Repo, or you can create a PR for the same. Your contribution will taken into consideration as early as possible
+This project is created while keeping user privacy and security in mind. So please feel free to suggest any changes, bugs or security issues you find while using. You can create a Issue in this Github Repo, or you can create a PR for the same. Your contribution will be taken into consideration as early as possible. 
+For Contributing you can look out to the following repositories -
+- Main Repo - https://github.com/Suryansh-23/Project-Leek
+- File Vault Repo - https://github.com/Suryansh-23/File-Vault-Desktop
 
 
 # How does this Work ?
@@ -57,54 +61,84 @@ autonumber
 ```
 
 ## **`Main.py` file**
-### Imports and Initial Setup
- The code starts by importing the libraries needed to encrypt and decrypt data. The next two lines import a list of choices from random, which is used for generating a string with letters and numbers. Next, ascii_letters and digits are imported so that they can be used in the program.The code then defines some variables: Flask is defined as an object that will hold all of the functions needed to run this application; jsonify turns JSON objects into Python dictionaries; request is defined as an HTTP client object that handles requests made through GET or POST methods; path returns a directory's pathname without its filename extension (e.g., "C:\Users\John" would return "C:"); rename renames one file or directory to another name (e.g., "oldfile" would become "newfile"); ZipFile creates a new zip file containing files from multiple directories; os provides access to operating system commands like rename and path. Next, there are three if statements: If flask was not already created, it will create it using the function flask(); If jsonify was not already created, it will create it using the function jsonify(); If stegano_encrypt() was not already created, it. The code is a Python script that uses the AES encryption algorithm to encrypt and decrypt text. The code above also imports the Steganography and Encoder modules, which are used for stegano-encrypting and stegano-decrypting.
- The code is a function that generates a random key.
- The function takes an integer as input and returns the string of characters that make up the key.
- The code starts by declaring some variables, including AUTH (global variable) for maintaining a valid Auth-Key to be used to verify connection with authenticated clients only, str_pool (a list of all ASCII letters and digits), choices(str_pool, k=k) which is used to generate the string of characters in str_pool using k as an index into str_pool.
- The code generates a random string of alphanumeric characters.
- The generated string is then joined with the key k=16 to form a single string that has 16 digits.
- The output of the code above is "e9d1b7c8".
- The code starts by importing the Flask module.
+### Imports
+The Main.py file starts by importing the local modules for the necessary functionalities like the AES Module, Steganography and the Encode for the File Vault. After that, the required built-in packages are imported like the random package for generating a random alpha-numeric auth key, string package for the alpha-numeric characters, JSON for translating JSON objects in python dictionaries, zip file for unzipping the Zipped File-Vault App, os package for file-path related functions. Then the flask package is imported for the API.
+
+### Helper Functions 
+The file also contains some helper functions like random_key, str2hex and hex2str for generating a random alpha-numeric Auth Key for authentication purposes, converting an ASCII string to hex & vice-versa respectively.
  
- ### Routes
- Next, a function called home is defined that will handle all requests to the API route.
- The code then defines a variable called app which will be used as an instance of the Flask class.
- Next, two routes are defined: one for testing if the API is online and another for returning some information about our application.
- The code is an example of how to use Flask and the Python programming language.
- The code above is a standard API route for testing if the API is online.
- The code is a function that returns the cipher key.
- The code is trying to figure out what encryption type was sent in the request header, and if it's not 0x then it will use str2hex to convert the string into hexadecimal format.
- The first thing this function does is check for an AES-String in the request headers.
- If there isn't one, then it will return False and 500 as a response with jsonify().
- Next, if there is an AES-String in the request headers, then it will try to parse out what type of encryption was used by checking for "0x" at the beginning of the string.
- If there isn't any "0x", then it assumes that 128 bit encryption was used (because all other values start with "1").
- The code attempts to return the AES-encryption key for a given string.
- The code attempts to return the AES-encryption key for a given string.
- The code starts by getting the user's password.
- The code then uses this password to get a vault path and file paths from the request headers.
- Next, it creates a ZipFile object that is used to store files in the vault.
- The first thing that happens is that if there are no file paths specified, then an error will be returned with 500 status code and False as JSON response data: if string[:2] != "0x": string = str2hex(string) Next, it encrypts any given string using AES-256 encryption algorithm with cipher key of "Cipher-Key" and encryption type of 0 for 128 bit or 1 for 192 bit or 2 for 256 bit: encrypt_type = request.headers.get("Encryption-Type") If the input was not encrypted before (i.e., if it was just plain text), then now we're going to encrypt it using AES-256 algorithm with cipher key of "Cipher-Key" and encryption type of 0 for 128 bit or 1 for 192 bit or 2 for 256 bit: decrypted = aes_decrypt(str2hex(cipher_key), string,
- The code is a sample of how to encrypt and decrypt files using AES.
- The first thing that needs to be done is the creation of the cipher key.
- This can be accomplished by passing in the password as a string, which will then be converted into a hexadecimal string.
- The next step is to create an encryption type value, which will determine what kind of encryption algorithm should be used for encrypting and decrypting the file.
- Once this has been created, it is time to start creating the actual function that will do all of these things for us.
- First we need to create an instance of AES with our desired key size (128 bit or 256 bit).
- Next we need to create an instance of ZipFile, which will
- The code is a simple Python script that will encrypt the contents of a file and then store it in the "Vault" folder.
- The user is prompted for their password, which is stored as plain text in the code.
- The first line imports the necessary libraries to run this program: import os, sys, urllib2, json, time from urllib2 import urlopen #for opening URLs from os import path #for getting paths from json import loads #to parse JSON data from time import sleep #to delay execution by sleeping for 1 second before executing next command
- The code is a Python script that will create a new file called "File-Vault-v1.0.0-win32-x64.zip" and then extract all of the files from it into the folder "C:\Users\Username\Documents\Python".
- The code above will also rename the original "File-Vault-v1.0.0-win32-x64" to "Vault", and then move it to the desired location, which in this case is C:\Users\Username\Documents\.
- The code starts by checking if the request is a GET or POST.
- If it's a GET, then it will return the string "Hello World".
- If it's a POST, then it will check to see if there is an Img-Addr in the headers of the request.
- If there is, then loads(request.headers.get("Img-Addr")) will load that image into memory and for each pixel in that image, stegano_decrypt(img=i) will decrypt one pixel at a time until all pixels are decrypted and stored in main[path.basename(i)] where path refers to what folder on disk was used to store this encrypted file (e.g., "C:\Users\John\Pictures").
- The code starts by creating an empty dictionary called main with keys being paths of folders on disk which were used to store encrypted files (e.g., C:\Users\John\Pictures).
- Then for each pixel in img: stegano_decrypt(img=i) decrypts one pixel at a time until all pixels are decrypted and stored in main[path] where path refers to what folder on disk was used to store this encrypted file (
- The code is used to encrypt a file using the stegano algorithm.
- The code above will return a dictionary of all encrypted files that have been uploaded.
+### Routes & Working
+After initializing the Flask App, some certain endpoints or routes are defined for communication with the frontend which take in parameters via HTTP-Headers. The following are the routes defined in the API –
+
+- `home`
+This is a standard API route for testing if the API is online or not. This endpoint can be reached but the frontend for ensuring proper connectivity with the API.
+
+- `cipher_key`
+This endpoint is used to fetch a standard private key that the user can use to perform the AES Encryption. This endpoint requires the frontend to send the Encryption-Type through the headers for obtaining a key of the required length. This also works as a random Pass-Key generator for the file-vault functionality.
+
+- `aes_encryption`
+This endpoint is responsible for performing the AES-Encryption on the String, Private Key passed using the API headers along with the type of AES Encryption (128, 192 or 256–bit). Here the code uses the helper functions to interconvert string to hex and vice versa and then return the results obtained using the aes_encrypt class in the form of a JSON object.
+
+- `aes_decrypt`
+This endpoint is similar to the previous route but instead of using the aes_encrypt class, it uses the aes_decrypt class and also checks if the string to decrypt is in hex form or just an ASCII string. This route also returns a JSON object.
+
+- `file_vault`
+This API route takes in the password, path for saving the vault, paths of the Files to add to the Vault in the request headers. Then it uses the ZipFile module functions to extract the file-vault app at the path provided. Then it uses the Vault Class from the Encoder.py file to create a pickle file containing the required files in a binary format and save that pickle file at the given path.
+
+- `stegano_encryption`
+This endpoint accepts a list containing the Image Paths and the String for performing Steganography using the stegano_encrypt class and then saves each file as a copy with a “_Encrypted” added at last. This route returns True or False depending on whether the operation was successful or not.
+
+- `stegano_decrypt`
+This endpoint is similar to the previous endpoint but instead of the encryption, it performs decryption with the Images obtained from the Image Paths using the stegano_decrypt class provided in the headers. 
+
+## **`Encoder.py` File**
+The Encoder.py starts by importing some standard packages like os, pickle and shutil for doing file system related tasks.
+Then a Class Vault is created that includes the following methods:
+
+- `tree_parser`
+This method takes in the path of the root directory and the paths of the file and generates a Dictionary containing the file structure with all the files having an absolute path. 
+
+- `create_vault`
+This method is used to create an empty vault for loading the required data.
+
+- `fill_vault`
+This method takes in the tree object and the path for the root directory. Then it loops over the tree while checking for the condition if the current value is a directory or not, if not, then it adds their binary data into the vault object.
+
+- `main`
+This is the main process loop that calls all the methods and generates a well formatted vault object that is then stored in a pickle file in the given path
+
+## **`File-Vault/Vault.py` File**
+The Vault.py file starts by importing the required built-in packages like the random package for generating a random alpha-numeric auth key, string package for the alpha-numeric characters, JSON for translating JSON objects in python dictionaries and vice-versa, os package for file-path related functions, pickle for reading pickle objects, mimetypes for classifying files. Then the flask package is imported for the API.
+
+### Helper Functions
+- `random_key`
+This function is used for generating a random alpha-numeric Auth Key for authentication purposes.
+
+- `manipulate`
+This function is used to convert the standard python data structure hash table to a formatted object consumable by the js frontend
+
+- `download_multiple`
+This function accepts a dictionary of the file names, a list of frontend-based arguments that are passed due to the tree view of data. This then traverses the dictionary and saves the files that are part of the whitelist in the directory provided.
+
+- `download_vault`
+This function works similarly to the previous function, but it saves all the files at a particular path according to the file structure of the vault.
+
+### Routes & Working 
+- `home`
+This is a standard API route for testing if the API is online or not. This endpoint can be reached but the frontend for ensuring proper connectivity with the API.
+
+- `auth` 
+This API Route is for Authentication with the correct frontend client. It Gets the Pass-Key in the request header and then checks if the Pass-Key is correct, if correct it sets the global variable AUTH to Auth Key generated by random_key and sends the Auth-Key string to the frontend.
+
+- `tree`
+This API Route sends directory structure object (Formatted) to the frontend if the correct Auth-Key is present. The returned object is jsonified for making it usable within the frontend.
+
+- `keys` 	
+This API Route sends the keys of the hash map of the file structure of the vault in a JSON format to the frontend if the Auth-Key passed in the header is correct.
+
+- `save, save_many & save_all`
+These routes perform the function of saving the required file at the provided path given that the Auth-Key given is correct. The Files are selected over the frontend for save and save_many and passed in the request header.
+
 
 ## `AES.py` file
 AES.py contains several functions that are standard practice for implementing the algorithm in the aes_encrypt and the aes_decrypt classes. These functions are:
