@@ -259,7 +259,6 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                         <InputText
                             className="border-change blur line-height-3 webkit-width text-center"
                             value={aesData['Cipher-Key']}
-                            readOnly={aesData['Encrypt-String'] !== ''}
                             onChange={(e) => {
                                 setAesData({
                                     ...aesData,
@@ -294,6 +293,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                         ) : (
                             <></>
                         )}
+                        <br />
                         {aesData['Cipher-Key'].length !== reqKeyLen ? (
                             aesData['Error-Messages'][1]
                         ) : (
