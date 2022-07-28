@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AnimationProps, motion } from 'framer-motion';
 import { Card } from 'primereact/card';
 import { Chip } from 'primereact/chip';
+import { ipcRenderer } from 'electron';
 import logo from '../../assets/icon.png';
 
 interface HomeProps {
@@ -34,6 +35,14 @@ const Home: React.FC<HomeProps> = ({ pageVariants, hash }) => {
                                 Project
                                 <br />
                                 <span className="project-text">Leɘk</span>
+                                <span className="text-700">
+                                    v
+                                    {(() => {
+                                        const tmp =
+                                            ipcRenderer.sendSync('app-version');
+                                        return tmp;
+                                    })()}
+                                </span>
                             </div>
                         </div>
                         <div className="text-center font-italic text-4xl line-height-1 p-2">
@@ -50,9 +59,10 @@ const Home: React.FC<HomeProps> = ({ pageVariants, hash }) => {
                     <div className="flex flex-column">
                         <div className="align-self-center pb-2">
                             <a
+                                title="github"
                                 className="appearance-none p-2"
                                 href="https://github.com/Suryansh-23/Project-Leek"
-                                rel="noreferrer"
+                                rel="noreferrer noopener"
                                 target="_blank"
                             >
                                 <Chip
@@ -62,9 +72,10 @@ const Home: React.FC<HomeProps> = ({ pageVariants, hash }) => {
                                 />
                             </a>
                             <a
+                                title="wiki"
                                 className="appearance-none"
                                 href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
-                                rel="noreferrer"
+                                rel="noreferrer noopener"
                                 target="_blank"
                             >
                                 <Chip

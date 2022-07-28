@@ -130,6 +130,10 @@ ipcMain.on('open-DevTools', () => {
     mainWindow?.openDevTools();
 });
 
+ipcMain.on('app-version', (e) => {
+    e.returnValue = app.getVersion();
+});
+
 ipcMain.on('file-vault-set-destination', (e) => {
     const opts = {
         title: `Destination for File Vault`,

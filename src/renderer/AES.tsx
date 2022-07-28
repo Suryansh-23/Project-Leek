@@ -23,6 +23,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
         Result: { string: string; hex: string };
         'Result-Type': string;
         'Result-Format': string;
+        'Error-Messages': Array<React.ReactElement>;
     };
     const [aesData, setAesData] = useState<AesDataStruct>({
         'Cipher-Key': 'JoqCy6yyO9mU4kjM',
@@ -32,13 +33,26 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
         Result: { string: '', hex: '' },
         'Result-Type': '',
         'Result-Format': 'string',
+        'Error-Messages': [
+            <>
+                Either remove the string from any of these or the <br /> String
+                for Decryption will be discarded.
+            </>,
+            <>
+                The Cipher-Key being used is of incorrect Length. <br />
+                Enter the correct Cipher-Key to continue.
+            </>,
+        ],
     });
     const [dialogVisibility, setDialogVisibility] = useState<boolean>(false);
     const encTypes = [
-        { name: '128-Bit', key: '0' },
-        { name: '192-Bit', key: '1' },
-        { name: '256-bit', key: '2' },
+        { name: '128-Bit', key: '0', len: 16 },
+        { name: '192-Bit', key: '1', len: 24 },
+        { name: '256-bit', key: '2', len: 32 },
     ];
+    const reqKeyLen = encTypes.filter(
+        (i) => i.key === aesData['Encryption-Type']
+    )[0].len;
 
     const callCipherKey = () => {
         fetch('http://127.7.3.0:2302/cipher_key', {
@@ -243,7 +257,13 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                         <InputText
                             className="border-change blur line-height-3 webkit-width text-center"
                             value={aesData['Cipher-Key']}
-                            readOnly
+                            readOnly={aesData['Encrypt-String'] !== ''}
+                            onChange={(e) => {
+                                setAesData({
+                                    ...aesData,
+                                    'Cipher-Key': e.target.value,
+                                });
+                            }}
                             placeholder="Cipher Key"
                         />
                         <Button
@@ -260,11 +280,25 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                             style={{ width: '15rem' }}
                             label="Generate Cipher-Key"
                             onClick={() => {
+                                // console.log(aesData['Encrypt-String'] !== '');
                                 callCipherKey();
                             }}
                         />
                     </div>
-                    <div className="flex justify-content-center pb-3">
+                    <span className="flex justify-content-center text-center p-error p-d-block">
+                        {aesData['Encrypt-String'] &&
+                        aesData['Decrypt-String'] ? (
+                            aesData['Error-Messages'][0]
+                        ) : (
+                            <></>
+                        )}
+                        {aesData['Cipher-Key'].length !== reqKeyLen ? (
+                            aesData['Error-Messages'][1]
+                        ) : (
+                            <></>
+                        )}
+                    </span>
+                    <div className="flex justify-content-center mt-3">
                         <Button
                             className="button-gradient"
                             label={
@@ -272,22 +306,21 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                                     ? 'Decrypt'
                                     : 'Encrypt'
                             }
-                            onClick={() =>
-                                aesData['Encrypt-String'] === ''
-                                    ? callDecrypt()
-                                    : callEncrypt()
-                            }
+                            onClick={() => {
+                                if (
+                                    aesData['Cipher-Key'].length !== reqKeyLen
+                                ) {
+                                    return;
+                                }
+
+                                if (aesData['Encrypt-String'] === '') {
+                                    callDecrypt();
+                                } else {
+                                    callEncrypt();
+                                }
+                            }}
                         />
                     </div>
-                    {aesData['Encrypt-String'] && aesData['Decrypt-String'] ? (
-                        <span className="flex justify-content-center text-center p-error p-d-block">
-                            Either remove the string from any of these or the
-                            <br />
-                            String for Decryption will be overwritten.
-                        </span>
-                    ) : (
-                        <></>
-                    )}
                 </div>
                 <Dialog
                     header={
