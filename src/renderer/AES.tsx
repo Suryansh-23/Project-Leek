@@ -77,9 +77,11 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
     };
 
     const callEncrypt = () => {
+        console.log(aesData);
+
         fetch('http://127.7.3.0:2302/aes_encryption', {
             headers: {
-                'AES-String': aesData['Encrypt-String'],
+                'AES-String': JSON.stringify(aesData['Encrypt-String']),
                 'Cipher-Key': aesData['Cipher-Key'],
                 'Encryption-Type': aesData['Encryption-Type'],
             },
@@ -357,7 +359,7 @@ const AES: React.FC<AESProps> = ({ pageVariants, hash }) => {
                         className="border-change blur mt-2"
                         value={
                             aesData['Result-Format'] === 'string'
-                                ? aesData.Result.string
+                                ? aesData.Result.string.replaceAll('\u0000', '')
                                 : aesData.Result.hex
                         }
                         rows={10}

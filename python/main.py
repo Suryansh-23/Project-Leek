@@ -1,3 +1,4 @@
+import json
 from AES import aes_encrypt, aes_decrypt
 from Steganography import stegano_encrypt, stegano_decrypt
 from Encoder import Vault
@@ -23,7 +24,13 @@ def random_key(k: int = 16):
 
 
 def str2hex(s: str):
-    return "0x" + "".join([hex(ord(i)).lstrip("0x") for i in s])
+    main = "0x"
+    for i in s:
+        tmp = hex(ord(i)).lstrip("0x")
+        if len(tmp) < 2:
+            tmp = "0" + tmp
+        main += tmp
+    return main
 
 
 def hex2str(hex: str):
@@ -32,8 +39,7 @@ def hex2str(hex: str):
     s = ""
     for i in chrs:
         n = int(f"0x{i}", 16)
-        if n >= 32:
-            s += chr(n)
+        s += chr(n)
     return s
 
 
@@ -65,7 +71,7 @@ def cipher_key():
 def aes_encryption():
     """"""
     try:
-        string = request.headers.get("AES-String")
+        string = json.loads(request.headers.get("AES-String"))
         cipher_key = request.headers.get("Cipher-Key")
         encrypt_type = request.headers.get("Encryption-Type")
     except:
