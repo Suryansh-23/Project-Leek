@@ -35,8 +35,8 @@ def str2hex(s: str):
 
 def hex2str(hex: str):
     hex = hex[2:]
-    chrs = [hex[i : i + 2] for i in range(0, len(hex), 2)]
     s = ""
+    chrs = [hex[i : i + 2] for i in range(0, len(hex), 2)]
     for i in chrs:
         n = int(f"0x{i}", 16)
         s += chr(n)

@@ -57,6 +57,15 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, setShowSidebar }) => {
                 },
             ],
         },
+        {
+            label: 'About',
+            icon: 'pi pi-info-circle',
+            className: 'flex-1 justify-content-center sidebar-home',
+            command: () => {
+                window.location.hash = '#/about';
+                setShowSidebar(false);
+            },
+        },
     ];
 
     return (

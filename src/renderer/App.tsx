@@ -14,6 +14,7 @@ import SideButton from './SideButton';
 import SideBar from './Sidebar';
 import FileVault from './FileVault';
 import Stegano from './Stegano';
+import About from './About';
 
 const App = () => {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -77,6 +78,15 @@ const App = () => {
                             path="/stegano"
                             element={
                                 <Stegano
+                                    pageVariants={pageVariants}
+                                    hash={hash}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/about"
+                            element={
+                                <About
                                     pageVariants={pageVariants}
                                     hash={hash}
                                 />
