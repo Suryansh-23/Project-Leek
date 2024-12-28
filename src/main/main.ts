@@ -17,6 +17,7 @@ import log from 'electron-log';
 import { ChildProcess, execFile } from 'child_process';
 import { existsSync } from 'fs';
 import { stdout } from 'process';
+import verifyFileChecksum from '../checksum';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -43,14 +44,21 @@ if (process.env.NODE_ENV === 'production') {
 const isDevelopment =
     process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-const backend = execFile('./python/main.exe', (error, sout, stderr) => {
-    stdout.write(`Python : ${sout}`);
-    if (error) {
-        console.error(stderr);
-        throw error;
-    }
-    console.log(stdout);
-});
+let backend: ChildProcess;
+let backendCompromised: boolean;
+if (verifyFileChecksum('./python/main.exe', 1)) {
+    backendCompromised = false;
+    backend = execFile('./python/main.exe', (error, sout, stderr) => {
+        stdout.write(`Python : ${sout}`);
+        if (error) {
+            console.error(stderr);
+            throw error;
+        }
+        console.log(stdout);
+    });
+} else {
+    backendCompromised = true;
+}
 if (isDevelopment) {
     require('electron-debug')();
 }
@@ -94,7 +102,16 @@ const createWindow = async () => {
         },
     });
 
-    mainWindow.loadURL(resolveHtmlPath('index.html'));
+    if (backendCompromised) {
+        console.log('====================================');
+        console.log(`Path: ${`${resolveHtmlPath('index.html')}#/backErr`}`);
+        console.log('====================================');
+
+        mainWindow.loadURL(`${resolveHtmlPath('index.html')}#/backErr`);
+        mainWindow.setSize(512, 364);
+    } else {
+        mainWindow.loadURL(resolveHtmlPath('index.html'));
+    }
 
     mainWindow.on('ready-to-show', () => {
         if (!mainWindow) {
@@ -108,8 +125,10 @@ const createWindow = async () => {
     });
 
     mainWindow.on('closed', () => {
-        backend.kill('SIGTERM');
-        mainWindow = null;
+        if (!backendCompromised) {
+            backend.kill('SIGTERM');
+            mainWindow = null;
+        }
     });
 
     const menuBuilder = new MenuBuilder(mainWindow);
@@ -127,7 +146,7 @@ const createWindow = async () => {
  */
 
 ipcMain.on('open-DevTools', () => {
-    mainWindow?.openDevTools();
+    mainWindow?.webContents.openDevTools();
 });
 
 ipcMain.on('app-version', (e) => {
@@ -135,7 +154,7 @@ ipcMain.on('app-version', (e) => {
 });
 
 ipcMain.on('file-vault-set-destination', (e) => {
-    const opts = {
+    const opts: Electron.OpenDialogOptions = {
         title: `Destination for File Vault`,
 
         defaultPath: 'C:\\Users\\%UserProfile%\\Desktop\\',
@@ -175,7 +194,7 @@ ipcMain.on('file-vault-set-destination', (e) => {
 app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
     // after all windows have been closed
-    if (process.platform !== 'darwin') {
+    if (!backendCompromised && process.platform !== 'darwin') {
         app.quit();
         backend.kill('SIGINT');
     }

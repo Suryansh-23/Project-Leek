@@ -15,6 +15,7 @@ import SideBar from './Sidebar';
 import FileVault from './FileVault';
 import Stegano from './Stegano';
 import About from './About';
+import BackErr from './backErr';
 
 const App = () => {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -46,59 +47,72 @@ const App = () => {
             delay: 0.5,
         },
     };
+    console.log(hash);
 
     return (
         <>
-            <SideButton setShowSidebar={setShowSidebar} />
-            <AnimatePresence exitBeforeEnter initial={false}>
-                <HashRouter>
-                    <Routes>
-                        <Route
-                            path="/"
-                            element={
-                                <Home pageVariants={pageVariants} hash={hash} />
-                            }
-                        />
-                        <Route
-                            path="/aes"
-                            element={
-                                <AES pageVariants={pageVariants} hash={hash} />
-                            }
-                        />
-                        <Route
-                            path="/file-vault"
-                            element={
-                                <FileVault
-                                    pageVariants={pageVariants}
-                                    hash={hash}
+            {hash !== '#/backErr' ? (
+                <>
+                    <SideButton setShowSidebar={setShowSidebar} />
+                    <AnimatePresence exitBeforeEnter initial={false}>
+                        <HashRouter>
+                            <Routes>
+                                <Route
+                                    path="/"
+                                    element={
+                                        <Home
+                                            pageVariants={pageVariants}
+                                            hash={hash}
+                                        />
+                                    }
                                 />
-                            }
-                        />
-                        <Route
-                            path="/stegano"
-                            element={
-                                <Stegano
-                                    pageVariants={pageVariants}
-                                    hash={hash}
+                                <Route
+                                    path="/aes"
+                                    element={
+                                        <AES
+                                            pageVariants={pageVariants}
+                                            hash={hash}
+                                        />
+                                    }
                                 />
-                            }
-                        />
-                        <Route
-                            path="/about"
-                            element={
-                                <About
-                                    pageVariants={pageVariants}
-                                    hash={hash}
+                                <Route
+                                    path="/file-vault"
+                                    element={
+                                        <FileVault
+                                            pageVariants={pageVariants}
+                                            hash={hash}
+                                        />
+                                    }
                                 />
-                            }
-                        />
-                    </Routes>
-                </HashRouter>
-            </AnimatePresence>
-            <SideBar
-                showSidebar={showSidebar}
-                setShowSidebar={setShowSidebar}
-            />
+                                <Route
+                                    path="/stegano"
+                                    element={
+                                        <Stegano
+                                            pageVariants={pageVariants}
+                                            hash={hash}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path="/about"
+                                    element={
+                                        <About
+                                            pageVariants={pageVariants}
+                                            hash={hash}
+                                        />
+                                    }
+                                />
+                            </Routes>
+                        </HashRouter>
+                    </AnimatePresence>
+                    <SideBar
+                        showSidebar={showSidebar}
+                        setShowSidebar={setShowSidebar}
+                    />
+                </>
+            ) : (
+                <BackErr />
+            )}
         </>
     );
 };
